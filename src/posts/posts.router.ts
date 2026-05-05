@@ -5,7 +5,7 @@ import { authMiddleware } from '../middleware/auth.middeware';
 const postsRouter = express.Router();
 
 //--> /posts
-postsRouter.post('/',authMiddleware ,postsController.createPost.bind(postsController));
+postsRouter.post('/' ,postsController.createPost.bind(postsController));
 postsRouter.put('/:id', authMiddleware, postsController.updatePost.bind(postsController));
 postsRouter.delete('/:id',authMiddleware, postsController.deletePost.bind(postsController));
 postsRouter.get('/:id',authMiddleware, postsController.getPostById.bind(postsController));

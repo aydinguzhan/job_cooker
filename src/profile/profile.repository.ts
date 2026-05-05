@@ -1,36 +1,92 @@
-import { IUserProfile } from './profile.entity';
+import { Collection } from 'mongodb';
+import { ProfileEntity } from './profile.entity';
 import { getMongoDb } from '../config/mongo-db';
 import { getEnv } from '../config/env';
+
 export default class ProfileRepository {
-  private mongo_collection_name: string;
+  private readonly collectionName: string;
+
   constructor() {
-    this.mongo_collection_name = getEnv('MONGO_COLLECTON_NAME');
+    this.collectionName = getEnv('MONGO_COLLECTION_NAME');
   }
 
-  async createProfile(userId: string, payload: IUserProfile) {
-    const mongoConnect = await getMongoDb();
-    const profileCollection = mongoConnect.collection(this.mongo_collection_name);
-    const createdUser = await profileCollection.insertOne(payload);
-    return createdUser;
+  private async getCollection(): Promise<Collection<ProfileEntity>> {
+    const db = await getMongoDb();
+    return db.collection<ProfileEntity>(this.collectionName);
   }
-  async getUserProfileWithuerId(userId: string) {
-    const mongoConnect = await getMongoDb();
-    const profileInfoCollection = mongoConnect.collection(this.mongo_collection_name);
-    const profileDetail = await profileInfoCollection.findOne({ user_id: userId });
-    return profileDetail;
+
+  async createProfile(userId: string, payload: Partial<ProfileEntity>) {
+    const collection = await this.getCollection();
+
+    const now = new Date();
+
+    const profile: ProfileEntity = {
+      userId : userId,
+      firstName: payload.firstName ?? '',
+      lastName: payload.lastName ?? '',
+      title: payload.title ?? '',
+      description: payload.description ?? '',
+      profileImage: payload.profileImage,
+      skills: payload.skills ?? [],
+      experiences: payload.experiences ?? [],
+      references: payload.references ?? [],
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    return collection.insertOne(profile);
   }
-  async updatedProfileWithuserId(userId: string, payload: Partial<IUserProfile>) {
-    const mongoConnect = await getMongoDb();
 
-    const profileInfoCollection = mongoConnect.collection(this.mongo_collection_name);
+  async getUserProfileWithUserId(userId: string) {
+    const collection = await this.getCollection();
 
-  
+    return collection.findOne({ userId });
+  }
 
-    const updateUserProfile = await profileInfoCollection.updateOne({ user_id: userId }, {
-       $set:{
-        ...payload
-      }
-    });
-    return updateUserProfile;
+  async updateProfileWithUserId(
+    userId: string,
+    payload: Partial<ProfileEntity>,
+  ) {
+    const collection = await this.getCollection();
+
+    return collection.updateOne(
+      { userId },
+      {
+        $set: {
+          ...payload,
+          updatedAt: new Date(),
+        },
+      },
+    );
+  }
+
+  async upsertProfileWithUserId(
+    userId: string,
+    payload: Partial<ProfileEntity>,
+  ) {
+    const collection = await this.getCollection();
+
+    const now = new Date();
+
+    return collection.updateOne(
+      { userId },
+      {
+        $set: {
+          ...payload,
+          userId,
+          updatedAt: now,
+        },
+        $setOnInsert: {
+          createdAt: now,
+        },
+      },
+      { upsert: true },
+    );
+  }
+
+  async deleteProfileWithUserId(userId: string) {
+    const collection = await this.getCollection();
+
+    return collection.deleteOne({ userId });
   }
 }

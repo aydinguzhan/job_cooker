@@ -1,35 +1,49 @@
-// src/profile/profile.types.ts
+// entities/profile.entity.ts
 
-export interface IUserProfile {
-  userId: string;
+export type SkillLevel = 1 | 2 | 3 | 4 | 5;
 
-  skills: {
-    name: string;
-    level?: 'beginner' | 'intermediate' | 'advanced';
-    yearsExperience?: number;
-  }[];
-
-  yearsExperience: {
-    companyName: string;
-    position: string;
-    startDate?: string;
-    endDate?: string | null;
-  }[];
-
-  projects: {
-    name: string;
-    technologies: string[];
-  }[];
-
-  contactInfo: {
-    github?: string;
-    linkedin?: string;
-  };
-
-  createdAt: Date;
-  updatedAt: Date;
+export interface ProfileSkill {
+  name: string;
+  level: SkillLevel;
+  category?: 'frontend' | 'backend' | 'database' | 'tool' | 'other';
 }
 
-export  type UpdateUserProfilePayload = Partial<
-  Pick<IUserProfile, "skills" | "yearsExperience" | "projects" | "contactInfo">
->;
+export interface ProfileExperience {
+  role: string;
+  company: string;
+  startDate: Date;
+  endDate?: Date | null;
+  isCurrent: boolean;
+  description: string;
+}
+
+export interface ProfileReference {
+  name: string;
+  email: string;
+  title?: string;
+  company?: string;
+}
+
+export interface ProfileImage {
+  url: string;
+  publicId?: string;
+  alt?: string;
+}
+
+export interface ProfileEntity {
+  _id?: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  title: string;
+  description?: string;
+
+  profileImage?: ProfileImage;
+
+  skills: ProfileSkill[];
+  experiences: ProfileExperience[];
+  references: ProfileReference[];
+
+  createdAt?: Date;
+  updatedAt?: Date;
+}
