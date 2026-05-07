@@ -1,4 +1,4 @@
--CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -51,3 +51,35 @@ EXECUTE FUNCTION set_updated_at();
 
 CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at);
+
+
+CREATE TABLE IF NOT EXISTS skills (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  name VARCHAR(100) NOT NULL UNIQUE,
+  short_key VARCHAR(50) UNIQUE,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_skills_name ON skills(name);
+CREATE INDEX IF NOT EXISTS idx_skills_short_key ON skills(short_key);
+
+DROP TRIGGER IF EXISTS trg_skills_updated_at ON skills;
+
+CREATE TRIGGER trg_skills_updated_at
+BEFORE UPDATE ON skills
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+
+CREATE TABLE IF NOT EXISTS notifications(
+  receiver_id VARCHAR(255) NOT NULL,
+  actor_id VARCHAR(255) NOT NULL,
+  type VARCHAR(30) NOT NULL,
+  entity_type VARCHAR(30) NOT NULL,
+  entity_id VARCHAR(255) NOT NULL,
+  message VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+)

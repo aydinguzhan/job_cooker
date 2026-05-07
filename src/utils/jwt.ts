@@ -1,5 +1,5 @@
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
-import { getEnv } from '../config/env';
+import { getEnv } from '../projects/config/env';
 
 export interface JwtPayload {
   sub: string;
