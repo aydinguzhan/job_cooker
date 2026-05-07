@@ -2,7 +2,7 @@ export interface IPostsRepository {
     create(payload: ICreatePost): Promise<IPost>;
     update(id: string, payload: IUpdatePost): Promise<IPost>;
     delete(id: string): Promise<void>;
-    findById(id: string): Promise<IPost | null>;
+    findById(id: string): Promise<IPost[] | null>;
     findAll(): Promise<IPost[]>;
 }
 export interface IPost {

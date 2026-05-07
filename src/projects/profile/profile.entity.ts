@@ -3,12 +3,13 @@
 export type SkillLevel = 1 | 2 | 3 | 4 | 5;
 
 export interface ProfileSkill {
+  id: string;
   name: string;
   level: SkillLevel;
-  category?: 'frontend' | 'backend' | 'database' | 'tool' | 'other';
 }
 
 export interface ProfileExperience {
+  id: string;
   role: string;
   company: string;
   startDate: Date;
@@ -18,6 +19,7 @@ export interface ProfileExperience {
 }
 
 export interface ProfileReference {
+  referenceId?: string;
   name: string;
   email: string;
   title?: string;
@@ -31,19 +33,16 @@ export interface ProfileImage {
 }
 
 export interface ProfileEntity {
-  _id?: string;
   userId: string;
   firstName: string;
   lastName: string;
+  email: string;
   title: string;
   description?: string;
-
   profileImage?: ProfileImage;
-
   skills: ProfileSkill[];
   experiences: ProfileExperience[];
   references: ProfileReference[];
-
   createdAt?: Date;
   updatedAt?: Date;
 }

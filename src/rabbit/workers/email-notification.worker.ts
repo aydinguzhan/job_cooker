@@ -3,6 +3,7 @@ import { connectRabbitMQ, getRabbitChannel } from '../../shared/rabbitmq';
 import { getEnv } from '../../projects/config/env';
 import { sendMail } from '../../lib/mail/mail.service';
 import { userService } from '../../projects/user/user.module';
+import AppError from '../../errors/AppError';
 
 async function startNotificationWorker() {
   await connectRabbitMQ();
@@ -24,7 +25,7 @@ async function startNotificationWorker() {
         text: data.message,
       });
       channel.ack(msg);
-    } catch (error: any) {
+    } catch (error :any) {
       console.error('Email worker failed:', error);
 
       if (error.code === 'EAUTH') {

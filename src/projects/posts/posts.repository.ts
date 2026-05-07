@@ -20,13 +20,13 @@ export default class PostsRepository implements IPostsRepository {
    const { rows } = await this.db.query(query, ['deleted', id]);
     return rows[0];
   }
-  async findById(id: string): Promise<IPost | null> {
-    const query = `SELECT * FROM posts WHERE id = $1 AND status != $2`;
+  async findById(id: string): Promise<IPost[]> {
+    const query = `SELECT * FROM posts WHERE user_id = $1 AND status != $2`;
     const { rows } = await this.db.query<IPost>(query, [id, 'deleted']);
     if (rows.length === 0) {
-      return null;
+      return [];
     }
-    return rows[0];
+    return rows;
   }
   async findAll(): Promise<IPost[]> {
     const query = `SELECT * FROM posts WHERE status != $1`;

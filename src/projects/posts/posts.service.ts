@@ -1,3 +1,4 @@
+import AppError from '../../errors/AppError';
 import { publishEmailNotificationJob } from '../../rabbit/publisher/email.publisher';
 import { publishNotificationJob } from '../../rabbit/publisher/notification.publisher';
 import { ICreatePost, IPost } from './posts.entity';
@@ -9,14 +10,14 @@ export default class PostsService {
   async createPost(payload: ICreatePost): Promise<IPost> {
     const results = await this.postsRepository.create(payload);
     try {
-      await publishNotificationJob({
-        receiver_id: payload.user_id,
-        actor_id: payload.user_id,
-        type: 'POST_CREATED',
-        entity_type: 'post',
-        entity_id: results.id,
-        message: payload.content,
-      });
+      // await publishNotificationJob({
+      //   receiver_id: payload.user_id,
+      //   actor_id: payload.user_id,
+      //   type: 'POST_CREATED',
+      //   entity_type: 'post',
+      //   entity_id: results.id,
+      //   message: payload.content,
+      // });
       await publishEmailNotificationJob({
         receiver_id: payload.user_id,
         actor_id: payload.user_id,
@@ -33,6 +34,7 @@ export default class PostsService {
   }
 
   async updatePost(id: string, payload: ICreatePost): Promise<IPost> {
+    if (id) throw new AppError('User is must.', 400, 'User info is missing');
     return this.postsRepository.update(id, payload);
   }
 
@@ -40,7 +42,7 @@ export default class PostsService {
     return this.postsRepository.delete(id);
   }
 
-  async getPostById(id: string): Promise<IPost | null> {
+  async getPostById(id: string): Promise<IPost[] | null> {
     return this.postsRepository.findById(id);
   }
 

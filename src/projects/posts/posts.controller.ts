@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import  PostsService  from './posts.service';
 import { ICreatePost } from './posts.entity';
+import { successResponse } from '../../utils/response';
 export default class PostsController {
   constructor(private postsService: PostsService) {}
 
@@ -29,11 +30,11 @@ export default class PostsController {
     if (!post) {
       return res.status(404).send();
     }
-    return res.status(200).json(post);
+    return successResponse(res, post);
   }
 
   async getAllPosts(req: Request, res: Response) {
     const posts = await this.postsService.getAllPosts();
-    return res.status(200).json(posts);
+    return successResponse(res, posts);
   }
 }

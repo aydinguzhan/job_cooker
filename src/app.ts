@@ -8,9 +8,11 @@ import postsRouter from './projects/posts/posts.router';
 import refDataRouter from './projects/lookup/refdatas/refdata.router'
 import notificationRouter from './projects/notifications/notification.router'
 import "./server"
+import morgan from 'morgan';
+
 const app = express();
 
-app.use(errorHandler);
+app.use(morgan('dev'));
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -28,6 +30,7 @@ app.use("/notification",notificationRouter)
 app.use('/users', userRouter);
 app.use('/profile', profileRouter);
 app.use('/posts', postsRouter);
+app.use(errorHandler);
 
 app.listen(8080, () => {
   console.log('Server listening for 8080 port ');

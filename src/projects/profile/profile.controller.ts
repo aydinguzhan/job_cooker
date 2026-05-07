@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import ProfileService from './profile.service';
-import { IUserProfile } from './profile.entity';
+import { ProfileEntity } from './profile.entity';
 import { successResponse } from '../../utils/response';
 
 export default class ProfileController {
@@ -12,11 +12,10 @@ export default class ProfileController {
     return res.send({ data: result });
   }
   async createUserProfile(req: Request, res: Response) {
-    const { userId } = req.params;
     const payload = req.body;
 
     return res.send(
-      this.profileService.createUserProfile(userId as string, payload as IUserProfile)
+      this.profileService.createUserProfile(payload as ProfileEntity)
     );
   }
 
