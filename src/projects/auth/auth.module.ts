@@ -4,8 +4,8 @@ import AuthRepository from './auth.repository';
 import { db } from '../config/database';
 import UserRepository from '../user/user.repository';
 
-const authReposiory = new AuthRepository(db);
 const userRepository = new UserRepository(db);
+const authReposiory = new AuthRepository(db, userRepository);
 const authService = new AuthService(authReposiory, userRepository);
 const authController = new AuthController(authService);
 

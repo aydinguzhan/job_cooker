@@ -1,16 +1,26 @@
-import { ProfileEntity } from './profile.entity';
+import { CreateProfilePayload, UpdateProfileExperiencesPayload, UpdateProfileReferencesPayload, UpdateProfileSkillsPayload, UserProfilesInfo } from './profile.entity';
 import ProfileRepository from './profile.repository';
 
 export default class ProfileService {
   constructor(private readonly profileRepository: ProfileRepository) {}
 
-  async getUserIdForProfile(userId: string) {
-    return await this.profileRepository.getUserProfileWithUserId(userId);
+  async getProfileByUserId(userId: string) {
+    return await this.profileRepository.getProfileByUserId(userId);
   }
-  async createUserProfile( payload: ProfileEntity) {
-    return await this.profileRepository.createProfile( payload as ProfileEntity);
+  async createUserProfile( payload: CreateProfilePayload) {
+    return await this.profileRepository.createProfile( payload as CreateProfilePayload);
   }
-  async updatedProfileWithuserId(userId: string, payload :Partial<ProfileEntity>){
-    return await this.profileRepository.updateProfileWithUserId(userId,payload)
+  async updatedUserInfo(payload :UserProfilesInfo){
+    return await this.profileRepository.updatedUserInfo(payload);
   }
+  async updateProfileSkills(payload :UpdateProfileSkillsPayload){
+    return await this.profileRepository.updateProfileSkills(payload);
+  }
+  async updateProfileReferences(payload :UpdateProfileReferencesPayload){
+    return await this.profileRepository.updateProfileReferences(payload);
+  }
+  async updateProfileExperiences(payload :UpdateProfileExperiencesPayload){
+    return await this.profileRepository.updateProfileExperiences(payload);
+  }
+
 }

@@ -25,10 +25,12 @@ app.use(
 app.use(express.json());
 app.use('/auth', authRouter);
 
-app.use("/refdata",refDataRouter)
+app.use("/refdatas",refDataRouter)
 app.use("/notification",notificationRouter)
 app.use('/users', userRouter);
 app.use('/profile', profileRouter);
+console.log("burada")
+
 app.use('/posts', postsRouter);
 app.use(errorHandler);
 

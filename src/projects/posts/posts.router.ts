@@ -13,6 +13,13 @@ postsRouter.post(
   validate(createPostSchema),
   postsController.createPost.bind(postsController)
 );
+postsRouter.get('/:user_id', authMiddleware, postsController.getAllPosts.bind(postsController));
+
+postsRouter.post('/comment', authMiddleware, postsController.createComment.bind(postsController));
+postsRouter.get('/comment/:postId',authMiddleware,postsController.getAllComments.bind(postsController));
+postsRouter.put('/comment', authMiddleware,postsController.updateComment.bind(postsController));
+postsRouter.put('/comment/:postId', authMiddleware,postsController.deleteComment.bind(postsController));
+postsRouter.post("/like/change",authMiddleware,postsController.createLike.bind(postsController))
 postsRouter.put(
   '/:id',
   authMiddleware,
@@ -21,6 +28,5 @@ postsRouter.put(
 );
 postsRouter.delete('/:id', authMiddleware, postsController.deletePost.bind(postsController));
 postsRouter.get('/:id', authMiddleware, postsController.getPostById.bind(postsController));
-postsRouter.get('/', authMiddleware, postsController.getAllPosts.bind(postsController));
 
 export default postsRouter;

@@ -1,7 +1,9 @@
-import { Request, Response } from 'express';
-import  PostsService  from './posts.service';
-import { ICreatePost } from './posts.entity';
-import { successResponse } from '../../utils/response';
+import { NextFunction, Request, Response } from 'express';
+import PostsService from './posts.service';
+import { ICreatePost, IDeletePostComment, IUpdatePostComment } from './posts.entity';
+import { errorResponse, successResponse } from '../../utils/response';
+import { jwtttoUserId } from '../../utils/jwt';
+
 export default class PostsController {
   constructor(private postsService: PostsService) {}
 
@@ -33,8 +35,47 @@ export default class PostsController {
     return successResponse(res, post);
   }
 
-  async getAllPosts(req: Request, res: Response) {
-    const posts = await this.postsService.getAllPosts();
-    return successResponse(res, posts);
+  async getAllPosts(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = jwtttoUserId(req);
+      const posts = await this.postsService.getAllPosts(userId as string);
+      return successResponse(res, posts);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async createComment(req: Request, res: Response) {
+    const payload = req.body;
+
+    const userId = jwtttoUserId(req);
+    const comment = await this.postsService.createComment({ ...payload, user_id: userId });
+    if (comment) return successResponse(res, comment, 'Succesfuly', 201);
+    return errorResponse(res, 'Fail', 400);
+  }
+
+  async createLike(req: Request, res: Response) {
+    const payload = req.body;
+    const like = await this.postsService.createLike(payload);
+    return successResponse(res, like);
+  }
+  async updateComment(req: Request, res: Response) {
+    const payload: IUpdatePostComment = req.body;
+    const updatedComment = await this.postsService.updateComment(payload);
+    if (updatedComment) return successResponse(res, updatedComment);
+    return errorResponse(res, 'Comment is not found!');
+  }
+  async deleteComment(req: Request, res: Response) {
+    const payload: IDeletePostComment = req.body;
+    const { postId } = req.params;
+    const deletedComment = await this.postsService.deleteComment(postId as string, payload);
+    if (deletedComment) return successResponse(res, deletedComment);
+    return errorResponse(res, 'Comment is not found!');
+  }
+  async getAllComments(req: Request, res: Response) {
+    const { postId } = req.params;
+
+    const comments = await this.postsService.getAllComments(postId as string);
+
+    return successResponse(res, comments);
   }
 }
