@@ -6,7 +6,7 @@ export default class NotificationService {
   async getUserNotifications(receiverId: string) {
     return await this.notificationRepository.getUserNotifications(receiverId);
   }
-  
+
   async createNewNotification(payload: {
     receiver_id: string;
     actor_id: string;

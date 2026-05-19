@@ -3,7 +3,6 @@ import ProfileRepository from './profile.repository';
 import ProfileService from './profile.service';
 import { db } from '../config/database';
 
-
 let profileController: ProfileController | null = null;
 
 export async function getProfileController() {
@@ -11,8 +10,7 @@ export async function getProfileController() {
     return profileController;
   }
 
-
-  const profileRepository = new ProfileRepository(db,);
+  const profileRepository = new ProfileRepository(db);
 
   const profileService = new ProfileService(profileRepository);
 

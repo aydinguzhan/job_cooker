@@ -3,7 +3,7 @@ import UserRepository from './user.repository';
 
 export default class UserService {
   constructor(private userRepository: UserRepository) {}
-  async getUser(userId:string) {
+  async getUser(userId: string) {
     return await this.userRepository.get(userId);
   }
   async createUser(payload: IBaseUser & IWithPassword) {
