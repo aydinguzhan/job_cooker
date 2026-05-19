@@ -31,7 +31,6 @@ async function startNotificationWorker() {
       channel.nack(msg, false, true);
     }
   });
- 
 
   console.log('✅ Notification worker started');
 }

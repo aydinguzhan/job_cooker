@@ -1,13 +1,13 @@
 import express from 'express';
-import cors from "cors";
+import cors from 'cors';
 import { errorHandler } from './middleware/error.middleware';
 import userRouter from './projects/user/user.router';
 import authRouter from './projects/auth/auth.router';
 import profileRouter from './projects/profile/profile.router';
 import postsRouter from './projects/posts/posts.router';
-import refDataRouter from './projects/lookup/refdatas/refdata.router'
-import notificationRouter from './projects/notifications/notification.router'
-import "./server"
+import refDataRouter from './projects/lookup/refdatas/refdata.router';
+import notificationRouter from './projects/notifications/notification.router';
+import './server';
 import morgan from 'morgan';
 
 const app = express();
@@ -15,9 +15,9 @@ const app = express();
 app.use(morgan('dev'));
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   })
 );
@@ -25,11 +25,11 @@ app.use(
 app.use(express.json());
 app.use('/auth', authRouter);
 
-app.use("/refdatas",refDataRouter)
-app.use("/notification",notificationRouter)
+app.use('/refdatas', refDataRouter);
+app.use('/notification', notificationRouter);
 app.use('/users', userRouter);
 app.use('/profile', profileRouter);
-console.log("burada")
+console.log('burada');
 
 app.use('/posts', postsRouter);
 app.use(errorHandler);

@@ -25,7 +25,7 @@ async function startNotificationWorker() {
         text: data.message,
       });
       channel.ack(msg);
-    } catch (error :any) {
+    } catch (error: any) {
       console.error('Email worker failed:', error);
 
       if (error.code === 'EAUTH') {

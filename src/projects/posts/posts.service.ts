@@ -53,27 +53,30 @@ export default class PostsService {
     return this.postsRepository.findById(id);
   }
 
-  async getAllPosts(user_id:string): Promise<IPost[]> {
+  async getAllPosts(user_id: string): Promise<IPost[]> {
     return this.postsRepository.findAll(user_id);
   }
   async createComment(payload: IPostComment): Promise<IPostCreatedCommentResponse> {
     const results = await this.postsRepository.createComment(payload);
     return results;
   }
-  async createLike(payload:IPostsLike ){
+  async createLike(payload: IPostsLike) {
     const results = await this.postsRepository.createLike(payload);
-    return results
+    return results;
   }
   async updateComment(payload: IUpdatePostComment): Promise<IPostCreatedCommentResponse> {
     const results = await this.postsRepository.updateComment(payload);
     return results;
   }
-  async deleteComment(id :string,payload: IDeletePostComment): Promise<IPostCreatedCommentResponse> {
-    const results = await this.postsRepository.deleteComment(id,payload);
+  async deleteComment(
+    id: string,
+    payload: IDeletePostComment
+  ): Promise<IPostCreatedCommentResponse> {
+    const results = await this.postsRepository.deleteComment(id, payload);
     return results;
   }
-  async getAllComments(post_id:string){
+  async getAllComments(post_id: string) {
     const results = await this.postsRepository.getAllComments(post_id);
-    return results
+    return results;
   }
 }

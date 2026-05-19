@@ -7,4 +7,4 @@ const refDataRouter = express.Router();
 
 refDataRouter.get('/skills', refDataController.getSkills.bind(refDataController));
 
-export default refDataRouter
+export default refDataRouter;

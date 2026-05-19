@@ -13,7 +13,7 @@ export default class AuthController {
 
     try {
       const newUser = await this.authService.register({ first_name, last_name, email, password });
-      return successResponse(res, newUser, 'Register successful',201);
+      return successResponse(res, newUser, 'Register successful', 201);
     } catch (error) {
       next(error);
     }

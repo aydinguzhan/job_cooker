@@ -14,7 +14,6 @@ export type ILoginResult = {
   password_hash: string;
 };
 
-
 export type IRegister = {
   first_name: string;
   last_name: string;
@@ -22,14 +21,13 @@ export type IRegister = {
   password: string;
 };
 
-
 export interface ITokenResponse {
-  user:IUserInfo
-  accessToken :string
+  user: IUserInfo;
+  accessToken: string;
 }
 
 export interface IUserInfo {
-  id:string;
+  id: string;
   email: string;
   first_name: string;
   last_name: string;

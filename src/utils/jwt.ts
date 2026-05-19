@@ -37,7 +37,7 @@ export function jwtttoUserId(req: Request): string {
   const userId = user?.sub || user?.id;
 
   if (!userId) {
-    throw new Error("User not authenticated");
+    throw new Error('User not authenticated');
   }
 
   return userId;
