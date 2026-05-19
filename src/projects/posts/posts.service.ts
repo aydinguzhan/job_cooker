@@ -1,7 +1,14 @@
 import AppError from '../../errors/AppError';
 import { publishEmailNotificationJob } from '../../rabbit/publisher/email.publisher';
-import { publishNotificationJob } from '../../rabbit/publisher/notification.publisher';
-import { ICreatePost, IPost } from './posts.entity';
+import {
+  ICreatePost,
+  IDeletePostComment,
+  IPost,
+  IPostComment,
+  IPostCreatedCommentResponse,
+  IPostsLike,
+  IUpdatePostComment,
+} from './posts.entity';
 import PostsRepository from './posts.repository';
 
 export default class PostsService {
@@ -46,7 +53,27 @@ export default class PostsService {
     return this.postsRepository.findById(id);
   }
 
-  async getAllPosts(): Promise<IPost[]> {
-    return this.postsRepository.findAll();
+  async getAllPosts(user_id:string): Promise<IPost[]> {
+    return this.postsRepository.findAll(user_id);
+  }
+  async createComment(payload: IPostComment): Promise<IPostCreatedCommentResponse> {
+    const results = await this.postsRepository.createComment(payload);
+    return results;
+  }
+  async createLike(payload:IPostsLike ){
+    const results = await this.postsRepository.createLike(payload);
+    return results
+  }
+  async updateComment(payload: IUpdatePostComment): Promise<IPostCreatedCommentResponse> {
+    const results = await this.postsRepository.updateComment(payload);
+    return results;
+  }
+  async deleteComment(id :string,payload: IDeletePostComment): Promise<IPostCreatedCommentResponse> {
+    const results = await this.postsRepository.deleteComment(id,payload);
+    return results;
+  }
+  async getAllComments(post_id:string){
+    const results = await this.postsRepository.getAllComments(post_id);
+    return results
   }
 }

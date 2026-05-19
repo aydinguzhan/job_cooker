@@ -1,17 +1,16 @@
 export interface IUserRepository {
-  post(payload: IBaseUser & IWithPassword): Promise<IBaseUser & IWithPassword>;
+  post(payload: IBaseUser & {password_hash:string}): Promise<IBaseUser >;
   put(payload: IBaseUser): Promise<IUpdateUser>;
   get(id: string): Promise<IBaseUser>;
   delete(id: string): Promise<void>;
 }
 
 export interface IBaseUser {
-  id: string;
+  id?: string;
   first_name: string;
   last_name: string;
   email: string;
-  role: string;
-  is_active: boolean;
+  is_active?: boolean;
 }
 
 export type IUpdateUser = {
