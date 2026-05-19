@@ -10,10 +10,10 @@ export default class AuthService {
     private readonly userRepository: UserRepository
   ) {}
 
-  async  login(payload: ILogin): Promise<ITokenResponse> {
+  async login(payload: ILogin): Promise<ITokenResponse> {
     const { email, password } = payload;
     const user = await this.authRepository.login(payload);
-    console.log("user",user)
+    console.log('user', user);
     const isValid = await bcrypt.compare(password, user.password_hash);
     if (!isValid) throw new Error('Invalid emmail or password!');
 
@@ -38,5 +38,3 @@ export default class AuthService {
     return await this.authRepository.register(payload);
   }
 }
-
-

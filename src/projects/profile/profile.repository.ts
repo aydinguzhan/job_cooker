@@ -220,7 +220,7 @@ export default class ProfileRepository {
       payload.user_id,
     ]);
 
-      return this.getProfileByUserId(payload.user_id);
+    return this.getProfileByUserId(payload.user_id);
   }
   async updateProfileSkills(payload: UpdateProfileSkillsPayload) {
     const client = await this.db.connect();

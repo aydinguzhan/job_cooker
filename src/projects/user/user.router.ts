@@ -8,9 +8,14 @@ const router = express.Router();
 
 // --> /users
 
-router.get('/:id',authMiddleware, userController.getUser.bind(userController));
-router.post('/',authMiddleware, validate(createUserSchema), userController.createUser.bind(userController));
-router.put('/', authMiddleware,userController.updatedUser.bind(userController));
-router.delete('/', authMiddleware,userController.deleteUser.bind(userController));
+router.get('/:id', authMiddleware, userController.getUser.bind(userController));
+router.post(
+  '/',
+  authMiddleware,
+  validate(createUserSchema),
+  userController.createUser.bind(userController)
+);
+router.put('/', authMiddleware, userController.updatedUser.bind(userController));
+router.delete('/', authMiddleware, userController.deleteUser.bind(userController));
 
 export default router;

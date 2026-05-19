@@ -3,10 +3,10 @@ import { Database } from '../config/database';
 
 export default class UserRepository implements IUserRepository {
   constructor(private readonly db: Database) {}
-async post(payload: IBaseUser & {password_hash:string}) {
-  try {
-    const { rows } = await this.db.query<IBaseUser & {password_hash :string}>(
-      `
+  async post(payload: IBaseUser & { password_hash: string }) {
+    try {
+      const { rows } = await this.db.query<IBaseUser & { password_hash: string }>(
+        `
       INSERT INTO users (
         first_name,
         last_name,
@@ -28,20 +28,15 @@ async post(payload: IBaseUser & {password_hash:string}) {
       )
       RETURNING *
       `,
-      [
-        payload.first_name,
-        payload.last_name,
-        payload.email,
-        payload.password_hash,
-      ]
-    );
+        [payload.first_name, payload.last_name, payload.email, payload.password_hash]
+      );
 
-    return rows[0];
-  } catch (e) {
-    console.log(e);
-    return {} as IBaseUser ;
+      return rows[0];
+    } catch (e) {
+      console.log(e);
+      return {} as IBaseUser;
+    }
   }
-}
   async put(payload: IBaseUser): Promise<IUpdateUser> {
     const { rows } = await this.db.query(
       `UPDATE users SET (first_name,last_name,email) VALUES ($1, $2, $3) RETURNING * WHERE id = $4?`,

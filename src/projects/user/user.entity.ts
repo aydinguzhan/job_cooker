@@ -1,5 +1,5 @@
 export interface IUserRepository {
-  post(payload: IBaseUser & {password_hash:string}): Promise<IBaseUser >;
+  post(payload: IBaseUser & { password_hash: string }): Promise<IBaseUser>;
   put(payload: IBaseUser): Promise<IUpdateUser>;
   get(id: string): Promise<IBaseUser>;
   delete(id: string): Promise<void>;
