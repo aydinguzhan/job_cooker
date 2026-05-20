@@ -9,6 +9,7 @@ import refDataRouter from './projects/lookup/refdatas/refdata.router';
 import notificationRouter from './projects/notifications/notification.router';
 import './server';
 import morgan from 'morgan';
+import fileRouter from './projects/file/file.router';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/refdatas', refDataRouter);
 app.use('/notification', notificationRouter);
 app.use('/users', userRouter);
 app.use('/profile', profileRouter);
+app.use('/files', fileRouter);
 console.log('burada');
 
 app.use('/posts', postsRouter);
