@@ -31,7 +31,16 @@ export class FileRepository {
     });
   }
 
-  openDownloadStream(fileId: string) {
+  async openDownloadStream(fileId: string) {
     return this.bucket.openDownloadStream(new ObjectId(fileId));
+  }
+
+  async getFileMetadata(fileId: string) {
+    return this.db.collection("uploads.files").findOne<{
+      _id: ObjectId;
+      metadata?: FileMetadata;
+    }>({
+      _id: new ObjectId(fileId),
+    });
   }
 }

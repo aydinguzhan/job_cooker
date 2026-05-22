@@ -25,13 +25,11 @@ app.use(
 
 app.use(express.json());
 app.use('/auth', authRouter);
-
+app.use('/files', fileRouter);
 app.use('/refdatas', refDataRouter);
 app.use('/notification', notificationRouter);
 app.use('/users', userRouter);
 app.use('/profile', profileRouter);
-app.use('/files', fileRouter);
-console.log('burada');
 
 app.use('/posts', postsRouter);
 app.use(errorHandler);

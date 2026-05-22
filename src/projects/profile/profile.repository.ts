@@ -209,14 +209,19 @@ export default class ProfileRepository {
   async updatedUserInfo(payload: UserProfilesInfo) {
     const query = `
       UPDATE user_profiles 
-      SET (title, bio_description) = ($1, $2) 
-      WHERE user_id = $3
-      RETURNING title,bio_description
+      SET
+        title = $1,
+        bio_description = $2,
+        profile_image_path = $3,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE user_id = $4
+      RETURNING title, bio_description, profile_image_path
 `;
 
-    const { rows } = await this.db.query(query, [
+    await this.db.query(query, [
       payload.title,
       payload.bio_description,
+      payload.profile_image_path ?? null,
       payload.user_id,
     ]);
 

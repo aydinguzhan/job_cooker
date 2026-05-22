@@ -27,6 +27,7 @@ getProfileController().then((profileController) => {
     authMiddleware,
     profileController.updateProfileExperiences.bind(profileController)
   );
+  router.post('/ai-generated', profileController.postAiGeneratedProfile.bind(profileController));
 });
 
 export default router;
