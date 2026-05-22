@@ -1,5 +1,6 @@
 import type { FileRepository } from "./file.repository";
 import type { UploadImageParams } from "./file.entitiy";
+import { ObjectId } from "mongodb";
 
 export class FileService {
   constructor(private readonly fileRepository: FileRepository) {}
@@ -26,7 +27,20 @@ export class FileService {
     };
   }
 
-  getImageStream(fileId: string) {
-    return this.fileRepository.openDownloadStream(fileId);
+  async getImage(fileId: string) {
+    if (!ObjectId.isValid(fileId)) {
+      throw new Error("Invalid file id");
+    }
+
+    const file = await this.fileRepository.getFileMetadata(fileId);
+
+    if (!file) {
+      throw new Error("Image not found");
+    }
+
+    return {
+      stream: await this.fileRepository.openDownloadStream(fileId),
+      mimeType: file.metadata?.mimeType ?? "application/octet-stream",
+    };
   }
 }

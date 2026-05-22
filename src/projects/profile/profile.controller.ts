@@ -50,4 +50,14 @@ export default class ProfileController {
     const result = await this.profileService.updateProfileExperiences({ user_id, ...payload });
     return successResponse(res, result);
   }
+  async postAiGeneratedProfile(req: Request, res: Response) {
+    const { prompt } = req.body;
+    if (!prompt || typeof prompt !== 'string') {
+      return res.status(400).json({
+        message: 'Prompt alanı zorunludur',
+      });
+    }
+    const result = await this.profileService.postAiGeneratedProfile(prompt);
+    return successResponse(res, result);
+  }
 }

@@ -43,14 +43,26 @@ export class FileController {
   }
 
   async getImage(req: Request, res: Response) {
-    const stream = this.fileService.getImageStream(req.params.fileId as string);
+    try {
+      const { stream, mimeType } = await this.fileService.getImage(
+        req.params.fileId as string
+      );
 
-    stream.on("error", () => {
-      return res.status(404).json({
-        message: "Image not found",
+      res.setHeader("Content-Type", mimeType);
+
+      stream.on("error", () => {
+        return res.status(404).json({
+          message: "Image not found",
+        });
       });
-    });
 
-    stream.pipe(res);
+      stream.pipe(res);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Image could not be loaded";
+      const statusCode = message === "Invalid file id" ? 400 : 404;
+
+      return res.status(statusCode).json({ message });
+    }
   }
 }
