@@ -36,4 +36,6 @@ export default class AuthRepository implements IAuthRepositry {
 
     return result;
   }
+
+ 
 }

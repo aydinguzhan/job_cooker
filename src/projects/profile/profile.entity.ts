@@ -33,7 +33,7 @@ export interface ProfileImage {
 }
 
 export type CreateProfilePayload = {
-  user_id: string;
+  user_id?: string;
   title: string;
   bio_description?: string;
   profile_image_path?: string;

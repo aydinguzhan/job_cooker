@@ -27,7 +27,11 @@ getProfileController().then((profileController) => {
     authMiddleware,
     profileController.updateProfileExperiences.bind(profileController)
   );
-  router.post('/ai-generated', profileController.postAiGeneratedProfile.bind(profileController));
+  router.post(
+    '/ai-generated',
+    authMiddleware,
+    profileController.postAiGeneratedProfile.bind(profileController)
+  );
 });
 
 export default router;

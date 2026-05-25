@@ -245,3 +245,16 @@ CREATE TRIGGER trg_user_profile_references_updated_at
 BEFORE UPDATE ON user_profile_references
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS user_follows (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  follower_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  following_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+
+  CONSTRAINT uq_user_follows UNIQUE (follower_id, following_id),
+  CONSTRAINT chk_user_follows_not_self CHECK (follower_id <> following_id)
+);
