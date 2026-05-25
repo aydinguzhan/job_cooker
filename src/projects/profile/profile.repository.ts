@@ -5,9 +5,7 @@ import {
   UpdateProfileReferencesPayload,
   UpdateProfileExperiencesPayload,
 } from './profile.entity';
-import { getEnv } from '../config/env';
 import { Database } from '../config/database';
-import { Pool } from 'pg';
 
 export default class ProfileRepository {
   constructor(private readonly db: Database) {}
@@ -113,7 +111,7 @@ export default class ProfileRepository {
 
       await client.query('COMMIT');
 
-      return profile;
+      return this.getProfileByUserId(payload.user_id as string);
     } catch (error) {
       await client.query('ROLLBACK');
 
@@ -456,4 +454,6 @@ export default class ProfileRepository {
       client.release();
     }
   }
+
+  async updateUserProfile(payload: CreateProfilePayload) {}
 }

@@ -18,8 +18,12 @@ export default class ProfileController {
     }
   }
   async createUserProfile(req: Request, res: Response) {
+    const userId = jwtttoUserId(req);
     const payload = req.body;
-    const result = await this.profileService.createUserProfile(payload as CreateProfilePayload);
+    const result = await this.profileService.createUserProfile({
+      ...(payload as CreateProfilePayload),
+      user_id: userId,
+    });
     return successResponse(res, result);
   }
 

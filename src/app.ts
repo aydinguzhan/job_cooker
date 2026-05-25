@@ -10,6 +10,8 @@ import notificationRouter from './projects/notifications/notification.router';
 import './server';
 import morgan from 'morgan';
 import fileRouter from './projects/file/file.router';
+import followsRouter from './projects/follows/follows.router';
+import dashboardRouter from './projects/dashboard/dahsboard.router';
 
 const app = express();
 
@@ -30,7 +32,8 @@ app.use('/refdatas', refDataRouter);
 app.use('/notification', notificationRouter);
 app.use('/users', userRouter);
 app.use('/profile', profileRouter);
-
+app.use("/follows", followsRouter);
+app.use('/dashboard', dashboardRouter);
 app.use('/posts', postsRouter);
 app.use(errorHandler);
 

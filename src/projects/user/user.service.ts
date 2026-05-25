@@ -1,4 +1,4 @@
-import { IBaseUser, IWithPassword } from './user.entity';
+import { IBaseUser } from './user.entity';
 import UserRepository from './user.repository';
 
 export default class UserService {
@@ -6,7 +6,7 @@ export default class UserService {
   async getUser(userId: string) {
     return await this.userRepository.get(userId);
   }
-  async createUser(payload: IBaseUser & IWithPassword) {
+  async createUser(payload: IBaseUser & { password_hash: string }) {
     return this.userRepository.post(payload);
   }
   async updatedUser(payload: IBaseUser) {
