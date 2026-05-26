@@ -85,12 +85,14 @@ CREATE TABLE IF NOT EXISTS notifications (
   type VARCHAR(30) NOT NULL,
   entity_type VARCHAR(30) NOT NULL,
   entity_id UUID NOT NULL,
+  title VARCHAR(255),
   message VARCHAR(255) NOT NULL,
   is_read BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL
 );
+
 
 CREATE INDEX IF NOT EXISTS idx_notifications_receiver_id ON notifications(receiver_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_actor_id ON notifications(actor_id);

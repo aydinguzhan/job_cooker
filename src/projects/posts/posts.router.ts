@@ -14,6 +14,7 @@ postsRouter.post(
   postsController.createPost.bind(postsController)
 );
 postsRouter.get('/:user_id', authMiddleware, postsController.getAllPosts.bind(postsController));
+postsRouter.get('/detail/:postId', authMiddleware, postsController.findByPostId.bind(postsController));
 
 postsRouter.post('/comment', authMiddleware, postsController.createComment.bind(postsController));
 postsRouter.get(

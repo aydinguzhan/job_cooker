@@ -1,13 +1,10 @@
-// src/workers/notification.worker.ts
 import { connectRabbitMQ, getRabbitChannel } from '../../shared/rabbitmq';
 import { getEnv } from '../../projects/config/env';
 import { sendMail } from '../../lib/mail/mail.service';
 import { userService } from '../../projects/user/user.module';
-import AppError from '../../errors/AppError';
 
 async function startNotificationWorker() {
   await connectRabbitMQ();
-
   const channel = getRabbitChannel();
   const emailQueueName = getEnv('RABBITMQ_EMAIL_NOTIFICATION_QUEUE');
 
@@ -23,6 +20,7 @@ async function startNotificationWorker() {
         to: email,
         subject: 'New Notification',
         text: data.message,
+        html: `<p>${data.message}</p>`,
       });
       channel.ack(msg);
     } catch (error: any) {
@@ -37,7 +35,7 @@ async function startNotificationWorker() {
     }
   });
 
-  console.log('✅ Notification worker started');
+  console.log('✅ Email notification worker started');
 }
 
 startNotificationWorker();

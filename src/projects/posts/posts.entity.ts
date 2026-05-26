@@ -45,7 +45,10 @@ export interface IDeletePostComment {
   user_id: string;
   content: string;
 }
-export interface IPostCreatedCommentResponse extends IPostComment, IBaseEntity {}
+export interface IPostCreatedCommentResponse extends IPostComment, IBaseEntity {
+  id?: string;
+  full_name?: string;
+}
 
 export interface IPostsLike {
   post_id: string;

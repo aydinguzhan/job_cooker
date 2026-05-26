@@ -44,6 +44,14 @@ export default class PostsController {
       next(error);
     }
   }
+  async findByPostId(req: Request, res: Response) {
+    const { postId } = req.params;
+    const post = await this.postsService.findByPostId(postId as string);
+    if (!post) {
+      return res.status(404).send();
+    }
+    return successResponse(res, post);
+  }
   async createComment(req: Request, res: Response) {
     const payload = req.body;
 

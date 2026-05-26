@@ -41,6 +41,40 @@ export default class PostsRepository implements IPostsRepository {
     }
     return rows;
   }
+  async findByPostId(post_id: string): Promise<IPost | null> {
+    const query = `
+      SELECT
+        p.id,
+        p.title,
+        p.content,
+        p.user_id,
+        p.status,
+        p.created_at,
+        p.updated_at,
+        (u.first_name || ' ' || u.last_name) AS full_name,
+        COUNT(DISTINCT pl.id)::INTEGER AS like_count,
+        COUNT(DISTINCT pc.id)::INTEGER AS comment_count
+      FROM posts p
+      LEFT JOIN users u
+      ON p.user_id = u.id
+      LEFT JOIN post_likes pl
+      ON p.id = pl.post_id
+      LEFT JOIN post_comments pc
+      ON pc.post_id = p.id
+      AND pc.deleted_at IS NULL
+      WHERE p.id = $1
+      AND p.status != $2
+      GROUP BY
+        p.id,
+        u.first_name,
+        u.last_name
+    `;
+    const { rows } = await this.db.query<IPost>(query, [post_id, 'deleted']);
+    if (rows.length === 0) {
+      return null;
+    }
+    return rows[0];
+  }
   async findAll(user_id: string): Promise<IPost[]> {
     const query = `
                 SELECT
@@ -87,14 +121,54 @@ export default class PostsRepository implements IPostsRepository {
 
   async createComment(payload: IPostComment): Promise<IPostCreatedCommentResponse> {
     const { post_id, user_id, content } = payload;
-    const query = `INSERT INTO post_comments (post_id, user_id, content) VALUES ($1, $2, $3) RETURNING *`;
+    const query = `
+      INSERT INTO post_comments (post_id, user_id, content)
+      VALUES ($1, $2, $3)
+      RETURNING id, post_id, user_id, content, created_at, updated_at
+    `;
 
     const { rows } = await this.db.query(query, [post_id, user_id, content]);
 
-    return rows[0];
+    const createdComment = rows[0];
+
+    const commentDetailQuery = `
+      SELECT
+        pc.id,
+        pc.post_id,
+        pc.user_id,
+        pc.content,
+        pc.created_at,
+        pc.updated_at,
+        (u.first_name || ' ' || u.last_name) AS full_name
+      FROM post_comments pc
+      LEFT JOIN users u
+      ON pc.user_id = u.id
+      WHERE pc.id = $1
+    `;
+
+    const { rows: commentRows } = await this.db.query<IPostCreatedCommentResponse>(
+      commentDetailQuery,
+      [createdComment.id]
+    );
+
+    return commentRows[0];
   }
   async getAllComments(post_id: string) {
-    const query = `SELECT post_id,user_id,content,created_at,updated_at FROM post_comments pc WHERE pc.post_id = $1`;
+    const query = `
+      SELECT
+        pc.id,
+        pc.post_id,
+        pc.user_id,
+        pc.content,
+        pc.created_at,
+        pc.updated_at,
+        (u.first_name || ' ' || u.last_name) AS full_name
+      FROM post_comments pc
+      LEFT JOIN users u
+      ON pc.user_id = u.id
+      WHERE pc.post_id = $1
+      ORDER BY pc.created_at DESC
+    `;
     const { rows } = await this.db.query(query, [post_id]);
     return rows;
   }

@@ -7,4 +7,4 @@ const followsRepository = new FollowsRepository(db);
 const followsService = new FollowsService(followsRepository);
 const followsController = new FollowsController(followsService);
 
-export { followsController };
+export { followsController,followsService };
