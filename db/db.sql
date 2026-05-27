@@ -85,12 +85,14 @@ CREATE TABLE IF NOT EXISTS notifications (
   type VARCHAR(30) NOT NULL,
   entity_type VARCHAR(30) NOT NULL,
   entity_id UUID NOT NULL,
+  title VARCHAR(255),
   message VARCHAR(255) NOT NULL,
   is_read BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL
 );
+
 
 CREATE INDEX IF NOT EXISTS idx_notifications_receiver_id ON notifications(receiver_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_actor_id ON notifications(actor_id);
@@ -152,6 +154,14 @@ CREATE TRIGGER trg_navigator_updated_at
 BEFORE UPDATE ON navigator
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
+
+
+CREATE TABLE IF NOT EXISTS role_navigators (
+  role_id UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+  navigator_id UUID NOT NULL REFERENCES navigators(id) ON DELETE CASCADE,
+
+  PRIMARY KEY (role_id, navigator_id)
+);
 
 CREATE TABLE IF NOT EXISTS user_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -258,3 +268,19 @@ CREATE TABLE IF NOT EXISTS user_follows (
   CONSTRAINT uq_user_follows UNIQUE (follower_id, following_id),
   CONSTRAINT chk_user_follows_not_self CHECK (follower_id <> following_id)
 );
+
+CREATE TABLE IF NOT EXISTS post_saves (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  status BOOLEAN NOT NULL DEFAULT true,
+
+
+  CONSTRAINT uq_post_saves_post_user UNIQUE (post_id, user_id)
+);
+
+
+CREATE INDEX IF NOT EXISTS idx_post_saves_post_id ON post_saves(post_id);
+CREATE INDEX IF NOT EXISTS idx_post_saves_user_id ON post_saves(user_id);

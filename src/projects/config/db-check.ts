@@ -1,5 +1,7 @@
 import { db } from './database';
 
+
+
 export const checkDbConnection = async () => {
   try {
     await db.query('SELECT 1');

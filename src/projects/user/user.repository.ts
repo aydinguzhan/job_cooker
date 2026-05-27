@@ -46,7 +46,7 @@ export default class UserRepository implements IUserRepository {
   }
   async get(id: string): Promise<IBaseUser> {
     const { rows } = await this.db.query<IBaseUser & IWithPassword>(
-      `SELECT id,first_name, last_name, email, password, role_id FROM users WHERE users.id = $1`,
+      `SELECT id,first_name, last_name, email, password_hash, role_id FROM users WHERE users.id = $1`,
       [id]
     );
     if (rows.length === 0) {

@@ -13,9 +13,18 @@ postsRouter.post(
   validate(createPostSchema),
   postsController.createPost.bind(postsController)
 );
+postsRouter.get('/save', authMiddleware, postsController.getSavedPosts.bind(postsController));
+postsRouter.get('/detail/:postId', authMiddleware, postsController.findByPostId.bind(postsController));
 postsRouter.get('/:user_id', authMiddleware, postsController.getAllPosts.bind(postsController));
 
 postsRouter.post('/comment', authMiddleware, postsController.createComment.bind(postsController));
+postsRouter.post('/save/:postId', authMiddleware, postsController.savePost.bind(postsController));
+postsRouter.put('/save/:postId', authMiddleware, postsController.unsavePost.bind(postsController));
+postsRouter.delete(
+  '/save/:postId',
+  authMiddleware,
+  postsController.deleteSavedPost.bind(postsController)
+);
 postsRouter.get(
   '/comment/:postId',
   authMiddleware,

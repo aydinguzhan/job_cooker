@@ -1,9 +1,9 @@
 // src/notifications/notification.publisher.ts
 import { getRabbitChannel } from '../../shared/rabbitmq';
 import { getEnv } from '../../projects/config/env';
-import { NotificationJob } from '../types';
+import { NotificationQueueJob } from '../types';
 
-export function publishNotificationJob(payload: NotificationJob) {
+export function publishNotificationJob(payload: NotificationQueueJob) {
   const channel = getRabbitChannel();
   const queueName = getEnv('RABBITMQ_NOTIFICATION_QUEUE');
 

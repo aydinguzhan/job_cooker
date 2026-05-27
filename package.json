@@ -10,9 +10,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "worker:notification": "tsx watch src/rabbit/workers/notification.worker.ts",
     "worker:email": "tsx watch src/rabbit/workers/email-notification.worker.ts",
-    "workers": "concurrently \"npm run worker:notification\" \"npm run worker:email\""
+    "workers": "npm run worker:email"
   },
   "keywords": [],
   "author": "",

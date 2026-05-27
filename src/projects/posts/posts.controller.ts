@@ -44,6 +44,23 @@ export default class PostsController {
       next(error);
     }
   }
+  async getSavedPosts(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = jwtttoUserId(req);
+      const posts = await this.postsService.getSavedPosts(userId as string);
+      return successResponse(res, posts);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async findByPostId(req: Request, res: Response) {
+    const { postId } = req.params;
+    const post = await this.postsService.findByPostId(postId as string);
+    if (!post) {
+      return res.status(404).send();
+    }
+    return successResponse(res, post);
+  }
   async createComment(req: Request, res: Response) {
     const payload = req.body;
 
@@ -57,6 +74,27 @@ export default class PostsController {
     const payload = req.body;
     const like = await this.postsService.createLike(payload);
     return successResponse(res, like);
+  }
+  async savePost(req: Request, res: Response) {
+    const { postId } = req.params;
+    const userId = jwtttoUserId(req);
+
+    const result = await this.postsService.postSave(postId as string, userId as string);
+    return successResponse(res, result, 'Post saved successfully', 201);
+  }
+  async unsavePost(req: Request, res: Response) {
+    const { postId } = req.params;
+    const userId = jwtttoUserId(req);
+
+    const result = await this.postsService.postUnsave(postId as string, userId as string);
+    return successResponse(res, result, 'Post unsaved successfully');
+  }
+  async deleteSavedPost(req: Request, res: Response) {
+    const { postId } = req.params;
+    const userId = jwtttoUserId(req);
+
+    const result = await this.postsService.postSaveDelete(postId as string, userId as string);
+    return successResponse(res, result, 'Saved post removed successfully');
   }
   async updateComment(req: Request, res: Response) {
     const payload: IUpdatePostComment = req.body;
