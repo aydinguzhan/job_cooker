@@ -15,6 +15,7 @@ export class DashboardRepository implements IDashboardEntitiy {
       p.created_at,
       p.updated_at,
       (u.first_name || ' ' || u.last_name) AS full_name,
+      up.profile_image_path,
       COUNT(DISTINCT pl.id)::INTEGER AS like_count,
       COUNT(DISTINCT pc.id)::INTEGER AS comment_count,
       CASE
@@ -24,6 +25,9 @@ export class DashboardRepository implements IDashboardEntitiy {
     FROM posts p
     JOIN users u
       ON u.id = p.user_id
+    LEFT JOIN user_profiles up
+      ON up.user_id = u.id
+      AND up.deleted_at IS NULL
 
     LEFT JOIN post_likes pl
       ON pl.post_id = p.id
@@ -52,6 +56,7 @@ export class DashboardRepository implements IDashboardEntitiy {
     GROUP BY
       p.id,
       u.id,
+      up.profile_image_path,
       my_like.id
 
     ORDER BY p.created_at DESC

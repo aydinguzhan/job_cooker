@@ -17,6 +17,7 @@ export interface IPost {
   title: string;
   content: string;
   user_id: string;
+  profile_image_path?: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -48,6 +49,7 @@ export interface IDeletePostComment {
 export interface IPostCreatedCommentResponse extends IPostComment, IBaseEntity {
   id?: string;
   full_name?: string;
+  profile_image_path?: string | null;
 }
 
 export interface IPostsLike {

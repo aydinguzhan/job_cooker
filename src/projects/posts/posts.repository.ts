@@ -52,11 +52,15 @@ export default class PostsRepository implements IPostsRepository {
         p.created_at,
         p.updated_at,
         (u.first_name || ' ' || u.last_name) AS full_name,
+        up.profile_image_path,
         COUNT(DISTINCT pl.id)::INTEGER AS like_count,
         COUNT(DISTINCT pc.id)::INTEGER AS comment_count
       FROM posts p
       LEFT JOIN users u
       ON p.user_id = u.id
+      LEFT JOIN user_profiles up
+      ON up.user_id = u.id
+      AND up.deleted_at IS NULL
       LEFT JOIN post_likes pl
       ON p.id = pl.post_id
       LEFT JOIN post_comments pc
@@ -67,7 +71,8 @@ export default class PostsRepository implements IPostsRepository {
       GROUP BY
         p.id,
         u.first_name,
-        u.last_name
+        u.last_name,
+        up.profile_image_path
     `;
     const { rows } = await this.db.query<IPost>(query, [post_id, 'deleted']);
     if (rows.length === 0) {
@@ -84,6 +89,7 @@ export default class PostsRepository implements IPostsRepository {
                 p.user_id,
                 p.created_at,
                 (u.first_name || ' ' || u.last_name) AS full_name,
+                up.profile_image_path,
 
                 CASE
                   WHEN pl.id IS NULL THEN false
@@ -96,6 +102,10 @@ export default class PostsRepository implements IPostsRepository {
 
               LEFT JOIN users u
               ON p.user_id = u.id
+
+              LEFT JOIN user_profiles up
+              ON up.user_id = u.id
+              AND up.deleted_at IS NULL
 
               LEFT JOIN post_likes pl
               ON p.id = pl.post_id
@@ -112,9 +122,62 @@ export default class PostsRepository implements IPostsRepository {
                 p.id,
                 u.first_name,
                 u.last_name,
+                up.profile_image_path,
                 pl.id
 
               ORDER BY p.created_at DESC;`;
+    const { rows } = await this.db.query<IPost>(query, [user_id]);
+    return rows;
+  }
+
+  async getSavedPosts(user_id: string): Promise<IPost[]> {
+    const query = `
+      SELECT
+        p.id,
+        p.title,
+        p.content,
+        p.user_id,
+        p.created_at,
+        p.updated_at,
+        p.status,
+        (u.first_name || ' ' || u.last_name) AS full_name,
+        up.profile_image_path,
+        COUNT(DISTINCT pl_all.id)::INTEGER AS like_count,
+        COUNT(DISTINCT pc.id)::INTEGER AS comment_count,
+        CASE
+          WHEN pl_me.id IS NULL THEN false
+          ELSE true
+        END AS islike
+      FROM post_saves ps
+      INNER JOIN posts p
+      ON ps.post_id = p.id
+      LEFT JOIN users u
+      ON p.user_id = u.id
+      LEFT JOIN user_profiles up
+      ON up.user_id = u.id
+      AND up.deleted_at IS NULL
+      LEFT JOIN post_likes pl_all
+      ON p.id = pl_all.post_id
+      LEFT JOIN post_likes pl_me
+      ON p.id = pl_me.post_id
+      AND pl_me.user_id = $1
+      LEFT JOIN post_comments pc
+      ON p.id = pc.post_id
+      AND pc.deleted_at IS NULL
+      WHERE ps.user_id = $1
+      AND ps.status = true
+      AND ps.deleted_at IS NULL
+      AND p.deleted_at IS NULL
+      AND p.status != 'deleted'
+      GROUP BY
+        p.id,
+        u.first_name,
+        u.last_name,
+        up.profile_image_path,
+        pl_me.id
+      ORDER BY MAX(ps.created_at) DESC
+    `;
+
     const { rows } = await this.db.query<IPost>(query, [user_id]);
     return rows;
   }
@@ -139,10 +202,14 @@ export default class PostsRepository implements IPostsRepository {
         pc.content,
         pc.created_at,
         pc.updated_at,
-        (u.first_name || ' ' || u.last_name) AS full_name
+        (u.first_name || ' ' || u.last_name) AS full_name,
+        up.profile_image_path
       FROM post_comments pc
       LEFT JOIN users u
       ON pc.user_id = u.id
+      LEFT JOIN user_profiles up
+      ON up.user_id = u.id
+      AND up.deleted_at IS NULL
       WHERE pc.id = $1
     `;
 
@@ -162,10 +229,14 @@ export default class PostsRepository implements IPostsRepository {
         pc.content,
         pc.created_at,
         pc.updated_at,
-        (u.first_name || ' ' || u.last_name) AS full_name
+        (u.first_name || ' ' || u.last_name) AS full_name,
+        up.profile_image_path
       FROM post_comments pc
       LEFT JOIN users u
       ON pc.user_id = u.id
+      LEFT JOIN user_profiles up
+      ON up.user_id = u.id
+      AND up.deleted_at IS NULL
       WHERE pc.post_id = $1
       ORDER BY pc.created_at DESC
     `;
@@ -274,32 +345,43 @@ export default class PostsRepository implements IPostsRepository {
     return rows;
   }
 
-  async getpostDashboard() {
+  async postSave(post_id: string, user_id: string) {
     const query = `
-    SELECT 
-    p.id,
-    p.title,
-    p.content,
-    p.created_at
-    CONCAT(u.first_name,' ', u.last_name),
-    (
-    SELECT COUNT(*)
-    FROM post_likes pl
-    WHERE pl.post_id = p.id
-  ) AS like_counti
+      INSERT INTO post_saves (post_id, user_id, status, deleted_at)
+      VALUES ($1, $2, true, NULL)
+      ON CONFLICT (post_id, user_id)
+      DO UPDATE SET
+        status = true,
+        deleted_at = NULL
+      RETURNING *
+    `;
 
-  (
-  SELECT COUNT(*)
-  FROM post_comments pc
-  WHERE pc.post_id _ p.id
-  AND pc.deleted_at IS NULL
-  ) AS comment_count,
+    const { rows } = await this.db.query(query, [post_id, user_id]);
+    return rows[0];
+  }
 
-  FROM posts p 
-  JOIN users u ON u.id = p.user_id
-  WHERE p.deleted_At IS NULL
-  AND p.status = 'published'
-  ORDER BY p.created_at DESC;ˆ
-   `;
+  async postUnsave(post_id: string, user_id: string) {
+    const query = `
+      UPDATE post_saves
+      SET status = false
+      WHERE post_id = $1
+      AND user_id = $2
+      RETURNING *
+    `;
+
+    const { rows } = await this.db.query(query, [post_id, user_id]);
+    return rows[0];
+  }
+
+  async deleteSavedPost(post_id: string, user_id: string) {
+    const query = `
+      DELETE FROM post_saves
+      WHERE post_id = $1
+      AND user_id = $2
+      RETURNING *
+    `;
+
+    const { rows } = await this.db.query(query, [post_id, user_id]);
+    return rows[0];
   }
 }

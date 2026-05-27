@@ -12,6 +12,7 @@ import morgan from 'morgan';
 import fileRouter from './projects/file/file.router';
 import followsRouter from './projects/follows/follows.router';
 import dashboardRouter from './projects/dashboard/dahsboard.router';
+import navigationRouter from './projects/navigations/navigation.router'
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use('/profile', profileRouter);
 app.use("/follows", followsRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/posts', postsRouter);
+app.use('/navigation',navigationRouter)
 app.use(errorHandler);
 
 app.listen(8080, () => {

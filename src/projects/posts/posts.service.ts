@@ -78,6 +78,9 @@ export default class PostsService {
   async getAllPosts(user_id: string): Promise<IPost[]> {
     return this.postsRepository.findAll(user_id);
   }
+  async getSavedPosts(user_id: string): Promise<IPost[]> {
+    return this.postsRepository.getSavedPosts(user_id);
+  }
   async createComment(payload: IPostComment): Promise<IPostCreatedCommentResponse> {
     const results = await this.postsRepository.createComment(payload);
 
@@ -118,6 +121,19 @@ export default class PostsService {
   }
   async getAllComments(post_id: string) {
     const results = await this.postsRepository.getAllComments(post_id);
+    return results;
+  }
+
+  async postSave(post_id: string, user_id: string) {
+    const results = await this.postsRepository.postSave(post_id, user_id);
+    return results;
+  }
+  async postUnsave(post_id: string, user_id: string) {
+    const results = await this.postsRepository.postUnsave(post_id, user_id);
+    return results;
+  }
+  async postSaveDelete(post_id: string, user_id: string) {
+    const results = await this.postsRepository.deleteSavedPost(post_id, user_id);
     return results;
   }
 }
