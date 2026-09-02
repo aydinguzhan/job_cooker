@@ -11,8 +11,8 @@ export default class NavigatorRepository implements INavigationEntitiy {
       n.icon,
       n.route_link as path
     FROM users u
-    JOIN role_navigator rn ON rn.role_id = u.role_id
-    JOIN navigator n ON n.id = rn.navigator_id
+    JOIN role_navigators rn ON rn.role_id = u.role_id
+    JOIN navigators n ON n.id = rn.navigator_id
     WHERE u.id = $1
     AND u.deleted_at IS NULL
     AND n.deleted_at IS NULL`;

@@ -11,6 +11,7 @@ export interface IBaseUser {
   last_name: string;
   email: string;
   is_active?: boolean;
+  role?: string;
 }
 
 export type IUpdateUser = {

@@ -22,13 +22,19 @@ export default class UserRepository implements IUserRepository {
         (
           SELECT id
           FROM roles
-          WHERE role = 'user'
+          WHERE role = $5
           AND deleted_at IS NULL
         )
       )
       RETURNING *
       `,
-        [payload.first_name, payload.last_name, payload.email, payload.password_hash]
+        [
+          payload.first_name,
+          payload.last_name,
+          payload.email,
+          payload.password_hash,
+          payload.role ?? 'job_seeker'
+        ]
       );
 
       return rows[0];

@@ -13,6 +13,7 @@ import fileRouter from './projects/file/file.router';
 import followsRouter from './projects/follows/follows.router';
 import dashboardRouter from './projects/dashboard/dahsboard.router';
 import navigationRouter from './projects/navigations/navigation.router'
+import { messageRouter } from './projects/messages/message.module';
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/follows", followsRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/posts', postsRouter);
 app.use('/navigation',navigationRouter)
+app.use('/messages', messageRouter);
 app.use(errorHandler);
 
 app.listen(8080, () => {

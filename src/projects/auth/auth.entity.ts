@@ -19,6 +19,7 @@ export type IRegister = {
   last_name: string;
   email: string;
   password: string;
+  role?: 'job_seeker' | 'recruiter' | 'admin';
 };
 
 export interface ITokenResponse {
