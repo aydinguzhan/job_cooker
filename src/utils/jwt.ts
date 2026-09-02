@@ -50,7 +50,6 @@ export function jwtttoUserId(req: Request): string {
     throw new Error('User not authenticated');
   }
 
-  console.log('USER ID FROM QUERY TOKEN ---->', userIdFromToken);
 
   return userIdFromToken;
 }

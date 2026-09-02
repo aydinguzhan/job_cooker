@@ -8,7 +8,7 @@ import {
 import { Database } from '../config/database';
 
 export default class ProfileRepository {
-  constructor(private readonly db: Database) {}
+  constructor(private readonly db: Database) { }
 
   async createProfile(payload: CreateProfilePayload) {
     const client = await this.db.connect();
@@ -233,11 +233,11 @@ export default class ProfileRepository {
 
       const profileResult = await client.query(
         `
-      SELECT id
-      FROM user_profiles
-      WHERE user_id = $1
-        AND deleted_at IS NULL
-      LIMIT 1
+        SELECT id
+        FROM user_profiles
+        WHERE user_id = $1
+          AND deleted_at IS NULL
+        LIMIT 1
       `,
         [payload.user_id]
       );
@@ -248,37 +248,50 @@ export default class ProfileRepository {
         throw new Error('Profile not found');
       }
 
+      // Mevcut aktif skill'leri pasifleştir
       await client.query(
         `
-      UPDATE user_profile_skills
-      SET
-        deleted_at = CURRENT_TIMESTAMP,
-        status = 'deleted'
-      WHERE profile_id = $1
-        AND deleted_at IS NULL
+        UPDATE user_profile_skills
+        SET
+          deleted_at = CURRENT_TIMESTAMP,
+          status = false
+        WHERE profile_id = $1
+          AND deleted_at IS NULL
       `,
         [profile.id]
       );
 
-      for (const skill of payload.skills) {
+      // Yeni skill'leri tek query'de ekle/güncelle
+      if (payload.skills.length > 0) {
         await client.query(
           `
-        INSERT INTO user_profile_skills (
-          profile_id,
-          skill_id,
-          level,
-          status,
-          deleted_at
-        )
-        VALUES ($1, $2, $3, 'active', NULL)
-        ON CONFLICT (profile_id, skill_id)
-        DO UPDATE SET
-          level = EXCLUDED.level,
-          status = 'active',
-          deleted_at = NULL,
-          updated_at = CURRENT_TIMESTAMP
+          INSERT INTO user_profile_skills (
+            profile_id,
+            skill_id,
+            level,
+            status,
+            deleted_at
+          )
+          SELECT
+            $1,
+            skill_id,
+            level,
+            true,
+            NULL
+          FROM unnest($2::uuid[], $3::integer[])
+            AS skills(skill_id, level)
+          ON CONFLICT (profile_id, skill_id)
+          DO UPDATE SET
+            level = EXCLUDED.level,
+            status = true,
+            deleted_at = NULL,
+            updated_at = CURRENT_TIMESTAMP
         `,
-          [profile.id, skill.skill_id, skill.level]
+          [
+            profile.id,
+            payload.skills.map(skill => skill.skill_id),
+            payload.skills.map(skill => skill.level),
+          ]
         );
       }
 
@@ -320,7 +333,7 @@ export default class ProfileRepository {
       UPDATE user_profile_references
       SET
         deleted_at = CURRENT_TIMESTAMP,
-        status = 'deleted',
+        status = true,
         updated_at = CURRENT_TIMESTAMP
       WHERE profile_id = $1
         AND deleted_at IS NULL
@@ -350,7 +363,7 @@ export default class ProfileRepository {
           $5,
           $6,
           $7,
-          'active',
+          true,
           NULL
         )
         `,
@@ -378,7 +391,6 @@ export default class ProfileRepository {
   }
   async updateProfileExperiences(payload: UpdateProfileExperiencesPayload) {
     const client = await this.db.connect();
-
     try {
       await client.query('BEGIN');
 
@@ -404,7 +416,7 @@ export default class ProfileRepository {
       UPDATE user_profile_experiences
       SET
         deleted_at = CURRENT_TIMESTAMP,
-        status = 'deleted',
+        status = true,
         updated_at = CURRENT_TIMESTAMP
       WHERE profile_id = $1
         AND deleted_at IS NULL
@@ -428,7 +440,7 @@ export default class ProfileRepository {
           deleted_at
         )
         VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, 'active', NULL
+          $1, $2, $3, $4, $5, $6, $7, $8, true, NULL
         )
         `,
           [
@@ -455,5 +467,5 @@ export default class ProfileRepository {
     }
   }
 
-  async updateUserProfile(payload: CreateProfilePayload) {}
+  async updateUserProfile(payload: CreateProfilePayload) { }
 }

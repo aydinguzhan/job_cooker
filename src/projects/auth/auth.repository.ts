@@ -22,8 +22,17 @@ export default class AuthRepository implements IAuthRepositry {
     }
     return rows[0] || null;
   }
+
+  async createLoginCode(userId: string)  {
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    const query = `INSERT INTO qr_login_sessions (user_id, session_code, pin_code,expires_at) VALUES($1,$2,$3,$4)`;
+    
+    const {rows} = await this.db.query(query,[])
+    
+    return code;
+  }
   async register(payload: IRegister): Promise<IBaseUser> {
-    const { email, first_name, last_name, password } = payload;
+    const { email, first_name, last_name, password, role } = payload;
     if (!email) throw new Error('Email is required!');
     const { rowCount } = await this.db.query<IUser>(
       'SELECT email FROM users WHERE users.email = $1',
@@ -32,10 +41,14 @@ export default class AuthRepository implements IAuthRepositry {
     if (rowCount && rowCount > 0) throw new Error('This email belongs to a registered user.');
 
     const password_hash = await bcrypt.hash(password, 10);
-    const result = await this.userRepository.post({ first_name, last_name, email, password_hash });
+    const result = await this.userRepository.post({
+      first_name,
+      last_name,
+      email,
+      password_hash,
+      role,
+    });
 
     return result;
   }
-
- 
 }

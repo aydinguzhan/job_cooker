@@ -10,7 +10,6 @@ export default class ProfileController {
   async getProfileByUserId(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = jwtttoUserId(req);
-      console.log('---->', userId);
       const result = await this.profileService.getProfileByUserId(userId as string);
       return res.send({ data: result });
     } catch (error) {

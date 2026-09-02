@@ -17,7 +17,10 @@ CREATE TABLE IF NOT EXISTS roles (
 );
 
 INSERT INTO roles (role)
-VALUES ('admin'), ('user'), ('manager')
+VALUES
+  ('admin'),
+  ('job_seeker'),
+  ('recruiter')
 ON CONFLICT (role) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS users (
@@ -138,7 +141,7 @@ BEFORE UPDATE ON post_comments
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
-CREATE TABLE IF NOT EXISTS navigator (
+CREATE TABLE IF NOT EXISTS navigators (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   label VARCHAR(55) NOT NULL,
   icon VARCHAR(55) NOT NULL,
@@ -149,9 +152,9 @@ CREATE TABLE IF NOT EXISTS navigator (
   deleted_at TIMESTAMP NULL
 );
 
-DROP TRIGGER IF EXISTS trg_navigator_updated_at ON navigator;
+DROP TRIGGER IF EXISTS trg_navigator_updated_at ON navigators;
 CREATE TRIGGER trg_navigator_updated_at
-BEFORE UPDATE ON navigator
+BEFORE UPDATE ON navigators
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
@@ -169,7 +172,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   title VARCHAR(255) NOT NULL,
   bio_description TEXT,
   profile_image_path VARCHAR(255),
-  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  status BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL
@@ -189,7 +192,7 @@ CREATE TABLE IF NOT EXISTS user_profile_skills (
   profile_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
   skill_id UUID NOT NULL REFERENCES skills(id) ON DELETE CASCADE,
   level INT CHECK (level BETWEEN 1 AND 5),
-  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  status BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL,
@@ -217,7 +220,7 @@ CREATE TABLE IF NOT EXISTS user_profile_experiences (
   end_date DATE NULL,
   is_current BOOLEAN NOT NULL DEFAULT false,
   description TEXT,
-  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  status BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL
@@ -241,7 +244,7 @@ CREATE TABLE IF NOT EXISTS user_profile_references (
   phone VARCHAR(50),
   company_name VARCHAR(255),
   position_title VARCHAR(255),
-  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  status BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL
@@ -284,3 +287,40 @@ CREATE TABLE IF NOT EXISTS post_saves (
 
 CREATE INDEX IF NOT EXISTS idx_post_saves_post_id ON post_saves(post_id);
 CREATE INDEX IF NOT EXISTS idx_post_saves_user_id ON post_saves(user_id);
+
+CREATE TABLE conversations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  subject VARCHAR(255),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE conversation_members (
+  conversation_id UUID REFERENCES conversations(id),
+  user_id UUID REFERENCES users(id),
+  PRIMARY KEY (conversation_id, user_id)
+);
+
+CREATE TABLE messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  conversation_id UUID REFERENCES conversations(id),
+  sender_id UUID REFERENCES users(id),
+  body TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE message_reads (
+  message_id UUID REFERENCES messages(id),
+  user_id UUID REFERENCES users(id),
+  read_at TIMESTAMP DEFAULT NOW(),
+  PRIMARY KEY (message_id, user_id)
+);
+
+CREATE TABLE qr_login_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id),
+  session_code TEXT NOT NULL UNIQUE,
+  pin_code VARCHAR(4),
+  used_at TIMESTAMP NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
