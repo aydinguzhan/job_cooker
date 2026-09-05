@@ -1,6 +1,6 @@
 import UserRepository from '../user/user.repository';
 import { singAccessToken } from '../../utils/jwt';
-import { ILogin, IRegister, ITokenResponse } from './auth.entity';
+import { ILogin, ILoginOr, IRegister, ITokenResponse } from './auth.entity';
 import AuthRepository from './auth.repository';
 import bcrypt from 'bcrypt';
 
@@ -8,7 +8,7 @@ export default class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly userRepository: UserRepository
-  ) {}
+  ) { }
 
   async login(payload: ILogin): Promise<ITokenResponse> {
     const { email, password } = payload;
@@ -18,6 +18,7 @@ export default class AuthService {
 
     const userInfo = await this.userRepository.getUserForEmail(email);
     const accessToken = singAccessToken({
+      id: userInfo.id,
       sub: userInfo.id,
       email: userInfo.email,
       role: userInfo.role_id,
@@ -33,10 +34,21 @@ export default class AuthService {
       },
     };
   }
+
+
   async register(payload: IRegister) {
     return await this.authRepository.register(payload);
   }
-  async createLoginCode(userId:string){
+  async createLoginCode(userId: string) {
+    console.log('Creating login code for userId:', userId);
     return await this.authRepository.createLoginCode(userId)
   }
+  async checkLoginCode(code: string) {
+    console.log('Creating login code for code:', code);
+    return await this.authRepository.checkLoginCode(code)
+  }
+  async approveQrLogin(userId: string, code: string) {
+    return await this.authRepository.approveQrLogin(userId, code)
+  }
+
 }

@@ -9,6 +9,12 @@ export type ILogin = {
   email: string;
   password: string;
 };
+
+export type ILoginOr = {
+  user_id: string,
+  email: string,
+  session_code: string
+}
 export type ILoginResult = {
   email: string;
   password_hash: string;

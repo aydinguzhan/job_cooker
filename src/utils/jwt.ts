@@ -31,9 +31,9 @@ export function jwtttoUserId(req: Request): string {
   const userIdFromReq = user?.sub || user?.id;
 
   if (userIdFromReq) {
-    console.log('USER ID FROM REQ.USER ---->', userIdFromReq);
     return userIdFromReq;
   }
+
 
   const token =
     typeof req.query.token === 'string' ? req.query.token : undefined;

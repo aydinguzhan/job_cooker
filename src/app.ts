@@ -20,7 +20,8 @@ const app = express();
 app.use(morgan('dev'));
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    // origin: ['http://localhost:5173', "0.0.0.0", "http://192.168.1.9"],
+    origin: ['http://localhost:5173'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -37,10 +38,10 @@ app.use('/profile', profileRouter);
 app.use("/follows", followsRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/posts', postsRouter);
-app.use('/navigation',navigationRouter)
+app.use('/navigation', navigationRouter)
 app.use('/messages', messageRouter);
 app.use(errorHandler);
 
-app.listen(8080, () => {
-  console.log('Server listening for 8080 port ');
+app.listen(8080, "0.0.0.0", () => {
+  console.log('Server listening  port ');
 });
