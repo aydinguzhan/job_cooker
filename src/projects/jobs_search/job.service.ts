@@ -1,3 +1,4 @@
+import { IJob } from "./job.entitiy";
 import { JobRepository } from "./job.repository";
 
 export class JobService {
@@ -8,5 +9,8 @@ export class JobService {
     }
     async jobDetail(jobId: string) {
         return await this.jobRepository.jobDetail(jobId)
+    }
+    async jobCreate(payload: IJob) {
+        return await this.jobRepository.jobCreate(payload)
     }
 }

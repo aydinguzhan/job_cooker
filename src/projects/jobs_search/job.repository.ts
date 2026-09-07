@@ -1,4 +1,6 @@
 import { Database } from "../config/database";
+import { IJob } from "./job.entitiy";
+
 
 export class JobRepository {
     constructor(private readonly db: Database) { }
@@ -15,7 +17,7 @@ export class JobRepository {
         j.description,
         j.created_at,
         j.updated_at,
-        
+        j.status,
         json_build_object(
             'id', c.id,
             'name', c.name,
@@ -35,6 +37,7 @@ export class JobRepository {
         FROM jobs j
         LEFT JOIN companies c ON j.company_id = c.id
         LEFT JOIN users u ON j.advertiser_id = u.id
+        WHERE j.status = true
         ORDER BY j.created_at DESC
         LIMIT $1 OFFSET $2;
     `
@@ -73,5 +76,50 @@ export class JobRepository {
         `
         const { rows } = await this.db.query(jobDetailQuery, [jobId])
         return rows[0]
+    }
+
+    private async companyControl(company_id: string) {
+        const companyQuery = `
+        SELECT
+        id
+        FROM
+        companies
+        WHERE
+        id = $1 
+        AND
+        status = TRUE
+        `
+        const { rowCount } = await this.db.query(companyQuery, [company_id]);
+        console.log("----->", rowCount)
+        if (rowCount && rowCount > 0) return true
+        return false
+    }
+    async jobCreate(payload: IJob) {
+        if (!await this.companyControl(payload.company_id)) throw new Error("Company not found!")
+        const jobCreateQuery = `
+        INSERT INTO jobs (
+        title, 
+        company_id, 
+        suitability_rate, 
+        advertiser_id, 
+        description
+        )
+        VALUES 
+        (
+            $1,
+            $2,
+            $3,
+            $4,
+            $5
+        )
+        RETURNING title
+
+        `
+        const { rows } = await this.db.query(jobCreateQuery, [payload.title, payload.company_id, payload.suitability_rate, payload.advertiser_id, payload.description])
+        return rows
+
+        //(SELECT id FROM companies LIMIT 1 -2
+        // (SELECT id FROM users LIMIT 1),     -- <--- BURASI: Mevcut kullanıcının ID'si
+
     }
 }

@@ -7,9 +7,7 @@ export class JobController {
 
     async searchJob(req: Request, res: Response) {
         const { page, size } = req.query
-        console.log("------>", typeof page, size)
         const results = await this.jobService.searchJob(page as string, size as string)
-        console.log("---->", results)
         return successResponse(res, results)
     }
 
@@ -17,6 +15,12 @@ export class JobController {
         const { jobId } = req.params
         const results = await this.jobService.jobDetail(jobId as string);
         return successResponse(res, results)
+    }
+
+    async jobCreate(req: Request, res: Response) {
+        const payload = req.body;
+        const result = await this.jobService.jobCreate(payload);
+        return successResponse(res, result)
     }
 
 

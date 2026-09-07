@@ -342,6 +342,7 @@ CREATE TABLE jobs (
   suitability_rate INT CHECK (suitability_rate BETWEEN 1 AND 5),
   advertiser_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
   description TEXT,
+  status BOOLEAN DEFAULT TRUE
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
