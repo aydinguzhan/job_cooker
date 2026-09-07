@@ -14,6 +14,7 @@ import followsRouter from './projects/follows/follows.router';
 import dashboardRouter from './projects/dashboard/dahsboard.router';
 import navigationRouter from './projects/navigations/navigation.router'
 import { messageRouter } from './projects/messages/message.module';
+import jobRouter from './projects/jobs_search/job.router';
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use('/dashboard', dashboardRouter);
 app.use('/posts', postsRouter);
 app.use('/navigation', navigationRouter)
 app.use('/messages', messageRouter);
+app.use('/jobs', jobRouter);
 app.use(errorHandler);
 
 app.listen(8080, "0.0.0.0", () => {
