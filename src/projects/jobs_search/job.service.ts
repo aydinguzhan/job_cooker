@@ -13,4 +13,7 @@ export class JobService {
     async jobCreate(payload: IJob) {
         return await this.jobRepository.jobCreate(payload)
     }
+    async jobFilterNameAndCompany(searchKey: string, size: string) {
+        return await this.jobRepository.jobFilterNameAndCompany(searchKey, size)
+    }
 }

@@ -7,6 +7,7 @@ const jobRouter = express.Router();
 jobRouter.use(authMiddleware);
 
 jobRouter.get("/search", jobController.searchJob.bind(jobController));
+jobRouter.get("/filter", jobController.jobFilterNameAndCompany.bind(jobController));
 jobRouter.get("/job-detail/:jobId", jobController.jobDetail.bind(jobController));
 jobRouter.post("/create", jobController.jobCreate.bind(jobController));
 jobRouter.put("/update", (req: Request, res: Response) => res.send({ job: "update" }));

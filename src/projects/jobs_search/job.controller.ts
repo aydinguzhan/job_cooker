@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import { successResponse } from "../../utils/response";
+import { errorResponse, successResponse } from "../../utils/response";
 import { JobService } from "./job.service";
+import { jwtttoUserId } from "../../utils/jwt";
+import { IJob } from "./job.entitiy";
 
 export class JobController {
     constructor(private readonly jobService: JobService) { };
@@ -18,8 +20,16 @@ export class JobController {
     }
 
     async jobCreate(req: Request, res: Response) {
-        const payload = req.body;
+        const payload: IJob = req.body;
+        const userId = jwtttoUserId(req);
+        payload.advertiser_id = userId
         const result = await this.jobService.jobCreate(payload);
+        return successResponse(res, result)
+    }
+    async jobFilterNameAndCompany(req: Request, res: Response) {
+        const { search, size } = req.query;
+        if (!search) return errorResponse(res, "Not Found", 404)
+        const result = await this.jobService.jobFilterNameAndCompany(search as string, size as string)
         return successResponse(res, result)
     }
 

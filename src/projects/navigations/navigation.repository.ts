@@ -2,10 +2,10 @@ import { Database } from '../config/database';
 import { INavigationEntitiy } from './navigations.entity';
 
 export default class NavigatorRepository implements INavigationEntitiy {
-  constructor(private readonly db: Database) {}
+  constructor(private readonly db: Database) { }
   async get(user_id: string) {
     const queryUser = `
-    SELECT
+    SELECT 
       n.id,
       n.label,
       n.icon,

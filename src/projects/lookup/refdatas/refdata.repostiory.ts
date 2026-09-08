@@ -13,4 +13,10 @@ export default class RefdataRepository implements IRefdataEntity {
     const { rows } = await this.db.query<IRefdata>(searchQuery, [`%${query}%`]);
     return rows;
   }
+  async getSearchCompaniy(query: string) {
+    const upperCase = query.toUpperCase()
+    const searchQuery = `SELECT id, name, name from companies WHERE name ILIKE $1`;
+    const { rows } = await this.db.query<IRefdata>(searchQuery, [`%${upperCase}%`]);
+    return rows;
+  }
 }

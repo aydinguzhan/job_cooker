@@ -8,4 +8,7 @@ export default class RefdataService {
   async getSearchSkills(query: string) {
     return await this.refdataRepository.getSearchSkills(query);
   }
+  async getSearchCompaniy(query: string) {
+    return await this.refdataRepository.getSearchCompaniy(query);
+  }
 }
