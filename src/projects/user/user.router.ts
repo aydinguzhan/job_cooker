@@ -7,7 +7,7 @@ import { authMiddleware } from '../../middleware/auth.middeware';
 const router = express.Router();
 
 // --> /users
-
+router.get('/search', authMiddleware, userController.getUserFilterName.bind(userController));
 router.get('/:id', authMiddleware, userController.getUser.bind(userController));
 router.post(
   '/',

@@ -1,8 +1,8 @@
-import { IBaseUser } from './user.entity';
+import { IBaseUser, IFilterUser } from './user.entity';
 import UserRepository from './user.repository';
 
 export default class UserService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private userRepository: UserRepository) { }
   async getUser(userId: string) {
     return await this.userRepository.get(userId);
   }
@@ -14,5 +14,8 @@ export default class UserService {
   }
   async deleteUser(id: string) {
     return await this.userRepository.delete(id);
+  }
+  async getUserFilterName(name: string): Promise<IFilterUser[]> {
+    return await this.userRepository.getUserFilterName(name)
   }
 }

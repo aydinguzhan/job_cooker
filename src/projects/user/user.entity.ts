@@ -3,6 +3,7 @@ export interface IUserRepository {
   put(payload: IBaseUser): Promise<IUpdateUser>;
   get(id: string): Promise<IBaseUser>;
   delete(id: string): Promise<void>;
+  getUserFilterName(name: string): Promise<IFilterUser[]>
 }
 
 export interface IBaseUser {
@@ -12,6 +13,11 @@ export interface IBaseUser {
   email: string;
   is_active?: boolean;
   role?: string;
+}
+export interface IFilterUser {
+  id: string,
+  first_name: string;
+  last_name: string;
 }
 
 export type IUpdateUser = {
