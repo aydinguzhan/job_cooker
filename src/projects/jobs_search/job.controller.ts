@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import { successResponse } from "../../utils/response";
+import { errorResponse, successResponse } from "../../utils/response";
 import { JobService } from "./job.service";
+import { jwtttoUserId } from "../../utils/jwt";
+import { IJob } from "./job.entitiy";
 
 export class JobController {
     constructor(private readonly jobService: JobService) { };
 
     async searchJob(req: Request, res: Response) {
         const { page, size } = req.query
-        console.log("------>", typeof page, size)
         const results = await this.jobService.searchJob(page as string, size as string)
-        console.log("---->", results)
         return successResponse(res, results)
     }
 
@@ -19,8 +19,6 @@ export class JobController {
         return successResponse(res, results)
     }
 
-<<<<<<< Updated upstream
-=======
     async jobCreate(req: Request, res: Response) {
         const payload: IJob = req.body;
         const userId = jwtttoUserId(req);
@@ -40,7 +38,6 @@ export class JobController {
         return successResponse(res, result)
     }
 
->>>>>>> Stashed changes
 
 
 }

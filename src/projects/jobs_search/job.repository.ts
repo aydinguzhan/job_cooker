@@ -1,8 +1,15 @@
 import { Database } from "../config/database";
+import { IJob } from "./job.entitiy";
 
 export class JobRepository {
     constructor(private readonly db: Database) { }
+    private async companyControl(company_id: string) {
+        const queryString = `SELECT id FROM companies WHERE id = $1`;
+        const { rowCount, rows } = await this.db.query(queryString, [company_id]);
 
+        if (!rowCount) return false;
+        return rows
+    }
     async searchJob(page: string, size: string) {
         const pageNum = Math.max(1, parseInt(page, 10) || 1);
         const limitNum = Math.max(1, parseInt(size, 10) || 10);
@@ -15,12 +22,8 @@ export class JobRepository {
         j.description,
         j.created_at,
         j.updated_at,
-<<<<<<< Updated upstream
-        
-=======
         j.status,
         j.url,
->>>>>>> Stashed changes
         json_build_object(
             'id', c.id,
             'name', c.name,
@@ -80,8 +83,7 @@ export class JobRepository {
         const { rows } = await this.db.query(jobDetailQuery, [jobId])
         return rows[0]
     }
-<<<<<<< Updated upstream
-=======
+
 
 
     async jobCreate(payload: IJob) {
@@ -188,5 +190,4 @@ export class JobRepository {
 
         return { rows, size }
     }
->>>>>>> Stashed changes
 }

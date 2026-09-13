@@ -1,3 +1,4 @@
+import { IJob } from "./job.entitiy";
 import { JobRepository } from "./job.repository";
 
 export class JobService {
@@ -9,8 +10,7 @@ export class JobService {
     async jobDetail(jobId: string) {
         return await this.jobRepository.jobDetail(jobId)
     }
-<<<<<<< Updated upstream
-=======
+
     async jobCreate(payload: IJob) {
         return await this.jobRepository.jobCreate(payload)
     }
@@ -20,5 +20,4 @@ export class JobService {
     async jobFilterNameAndCompany(searchKey: string, size: string) {
         return await this.jobRepository.jobFilterNameAndCompany(searchKey, size)
     }
->>>>>>> Stashed changes
 }

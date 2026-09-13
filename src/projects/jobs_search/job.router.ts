@@ -9,12 +9,8 @@ jobRouter.use(authMiddleware);
 
 jobRouter.get("/search", jobController.searchJob.bind(jobController));
 jobRouter.get("/job-detail/:jobId", jobController.jobDetail.bind(jobController));
-<<<<<<< Updated upstream
-jobRouter.post("/create", (req: Request, res: Response) => res.send({ job: "create" }));
-=======
 jobRouter.post("/create", jobController.jobCreate.bind(jobController));
 
->>>>>>> Stashed changes
 jobRouter.put("/update", (req: Request, res: Response) => res.send({ job: "update" }));
 jobRouter.delete("/delete", (req: Request, res: Response) => res.send({ job: "update" }));
 
