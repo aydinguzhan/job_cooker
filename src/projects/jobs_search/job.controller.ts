@@ -3,6 +3,16 @@ import { errorResponse, successResponse } from "../../utils/response";
 import { JobService } from "./job.service";
 import { jwtttoUserId } from "../../utils/jwt";
 import { IJob } from "./job.entitiy";
+import { z } from "zod";
+
+const scrapedJobsSchema = z.array(
+    z.object({
+        title: z.string().trim().min(1).max(100),
+        suitability_rate: z.number().int().min(1).max(5).optional(),
+        description: z.string().optional(),
+        url: z.string().url().max(150),
+    }),
+).min(1).max(100);
 
 export class JobController {
     constructor(private readonly jobService: JobService) { };
@@ -33,7 +43,7 @@ export class JobController {
         return successResponse(res, result)
     }
     async jobBulkCreate(req: Request, res: Response) {
-        const payload = req.body;
+        const payload = scrapedJobsSchema.parse(req.body);
         const result = await this.jobService.jobBulkCreate(payload)
         return successResponse(res, result)
     }

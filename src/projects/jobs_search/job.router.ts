@@ -1,9 +1,14 @@
 import express, { Request, Response } from "express";
 import { authMiddleware } from "../../middleware/auth.middeware";
+import { cookerAuthMiddleware } from "../../middleware/cooker-auth.middleware";
 import { jobController } from "./job.module";
 const jobRouter = express.Router();
 
-jobRouter.post("/create-bulk", jobController.jobBulkCreate.bind(jobController));
+jobRouter.post(
+    "/create-bulk",
+    cookerAuthMiddleware,
+    jobController.jobBulkCreate.bind(jobController),
+);
 
 jobRouter.use(authMiddleware);
 

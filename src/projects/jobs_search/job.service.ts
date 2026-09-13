@@ -1,4 +1,4 @@
-import { IJob } from "./job.entitiy";
+import { IJob, ScrapedJob } from "./job.entitiy";
 import { JobRepository } from "./job.repository";
 
 export class JobService {
@@ -14,7 +14,7 @@ export class JobService {
     async jobCreate(payload: IJob) {
         return await this.jobRepository.jobCreate(payload)
     }
-    async jobBulkCreate(payload: IJob[]) {
+    async jobBulkCreate(payload: ScrapedJob[]) {
         return await this.jobRepository.jobBulkCreate(payload)
     }
     async jobFilterNameAndCompany(searchKey: string, size: string) {
