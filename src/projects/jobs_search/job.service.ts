@@ -9,4 +9,16 @@ export class JobService {
     async jobDetail(jobId: string) {
         return await this.jobRepository.jobDetail(jobId)
     }
+<<<<<<< Updated upstream
+=======
+    async jobCreate(payload: IJob) {
+        return await this.jobRepository.jobCreate(payload)
+    }
+    async jobBulkCreate(payload: IJob[]) {
+        return await this.jobRepository.jobBulkCreate(payload)
+    }
+    async jobFilterNameAndCompany(searchKey: string, size: string) {
+        return await this.jobRepository.jobFilterNameAndCompany(searchKey, size)
+    }
+>>>>>>> Stashed changes
 }

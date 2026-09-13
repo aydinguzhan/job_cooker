@@ -2,7 +2,7 @@ import { IBaseUser, IUpdateUser, IUserRepository, IWithPassword } from './user.e
 import { Database } from '../config/database';
 
 export default class UserRepository implements IUserRepository {
-  constructor(private readonly db: Database) {}
+  constructor(private readonly db: Database) { }
   async post(payload: IBaseUser & { password_hash: string }) {
     try {
       const { rows } = await this.db.query<IBaseUser & { password_hash: string }>(
@@ -75,5 +75,19 @@ export default class UserRepository implements IUserRepository {
     );
     if (rows.length === 0) throw new Error('User is not find!');
     return rows[0];
+  }
+  async getUserFilterName(name: string) {
+    const query = `
+    SELECT 
+      first_name,
+      last_name 
+    FROM users
+    WHERE is_active = true
+      AND first_name ILIKE $1
+  `;
+
+    const { rows } = await this.db.query(query, [`%${name}%`]);
+
+    return rows;
   }
 }

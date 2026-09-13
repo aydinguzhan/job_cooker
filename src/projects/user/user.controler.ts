@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { IBaseUser } from './user.entity';
+import { IBaseUser, IFilterUser } from './user.entity';
 import UserService from './user.service';
 import { errorResponse, successResponse } from '../../utils/response';
 
 export default class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   async getUser(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
@@ -32,5 +32,11 @@ export default class UserController {
     const { id } = req.params;
     await this.userService.deleteUser(id as string);
     return successResponse(res, null, 'Successfully deleted user', 204);
+  }
+  async getUserFilterName(req: Request, res: Response) {
+    const { name } = req.query;
+    console.log(name)
+    const result = await this.userService.getUserFilterName(name as string)
+    return successResponse(res, result)
   }
 }

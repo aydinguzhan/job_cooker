@@ -19,6 +19,28 @@ export class JobController {
         return successResponse(res, results)
     }
 
+<<<<<<< Updated upstream
+=======
+    async jobCreate(req: Request, res: Response) {
+        const payload: IJob = req.body;
+        const userId = jwtttoUserId(req);
+        payload.advertiser_id = userId
+        const result = await this.jobService.jobCreate(payload);
+        return successResponse(res, result)
+    }
+    async jobFilterNameAndCompany(req: Request, res: Response) {
+        const { search, size } = req.query;
+        if (!search) return errorResponse(res, "Not Found", 404)
+        const result = await this.jobService.jobFilterNameAndCompany(search as string, size as string)
+        return successResponse(res, result)
+    }
+    async jobBulkCreate(req: Request, res: Response) {
+        const payload = req.body;
+        const result = await this.jobService.jobBulkCreate(payload)
+        return successResponse(res, result)
+    }
+
+>>>>>>> Stashed changes
 
 
 }
