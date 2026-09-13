@@ -8,3 +8,9 @@ export type IJob = {
 
 }
 
+export type ScrapedJob = {
+    title: string,
+    suitability_rate?: number,
+    description?: string,
+    url: string,
+}

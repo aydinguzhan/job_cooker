@@ -1,5 +1,6 @@
 import { Database } from "../config/database";
-import { IJob } from "./job.entitiy";
+import { IJob, ScrapedJob } from "./job.entitiy";
+import { getEnv } from "../config/env";
 
 export class JobRepository {
     constructor(private readonly db: Database) { }
@@ -115,7 +116,7 @@ export class JobRepository {
 
     }
 
-    async jobBulkCreate(payload: IJob[]) {
+    async jobBulkCreate(payload: ScrapedJob[]) {
         if (!payload || payload.length === 0) return [];
 
         // Veritabanı bağlantısı havuzundan (Pool) bir client alıyoruz
@@ -126,12 +127,15 @@ export class JobRepository {
             await client.query('BEGIN');
 
 
+            const companyId = getEnv("COOKER_COMPANY_ID");
+            const advertiserId = getEnv("COOKER_ADVERTISER_ID");
             const preparedPayload = payload.map(item => ({
                 title: item.title,
-                company_id: "d67bfcb8-dee7-40a4-b45b-9e690c80cb13",
+                company_id: companyId,
                 suitability_rate: item.suitability_rate ?? null,
-                advertiser_id: item.advertiser_id ?? "ac66124c-2eaa-4717-99e5-b14275701032",
-                description: item.description ?? ""
+                advertiser_id: advertiserId,
+                description: item.description ?? "",
+                url: item.url,
             }));
 
             // 3. Toplu İlan Ekleme (Sorgu 2)
@@ -143,10 +147,11 @@ export class JobRepository {
                         company_id uuid, 
                         suitability_rate int,   
                         advertiser_id uuid,     
-                        description text
+                        description text,
                         url  varchar(150)
                     )
-                    RETURNING title;
+                    ON CONFLICT (url) WHERE url IS NOT NULL DO NOTHING
+                    RETURNING id, title, url;
 `;
 
             const { rows } = await client.query(jobCreateQuery, [JSON.stringify(preparedPayload)]);
@@ -154,7 +159,11 @@ export class JobRepository {
             // İŞLEM BAŞARILI -> Tümü Veritabanına Yazılsın
             await client.query('COMMIT');
 
-            return rows;
+            return {
+                created: rows.length,
+                skipped: payload.length - rows.length,
+                jobs: rows,
+            };
         } catch (error) {
             // HATA OLUŞTU -> Yapılan her şeyi geri al! (Şirketler dahil)
             await client.query('ROLLBACK');
