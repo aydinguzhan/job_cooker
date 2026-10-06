@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { authMiddleware } from "../../middleware/auth.middeware";
 import { cookerAuthMiddleware } from "../../middleware/cooker-auth.middleware";
+import { jobSearchAuthMiddleware } from "../../middleware/job-search-auth.middleware";
 import { jobController } from "./job.module";
 const jobRouter = express.Router();
 
@@ -10,9 +11,10 @@ jobRouter.post(
     jobController.jobBulkCreate.bind(jobController),
 );
 
+jobRouter.get("/search", jobSearchAuthMiddleware, jobController.searchJob.bind(jobController));
+
 jobRouter.use(authMiddleware);
 
-jobRouter.get("/search", jobController.searchJob.bind(jobController));
 jobRouter.get("/job-detail/:jobId", jobController.jobDetail.bind(jobController));
 jobRouter.post("/create", jobController.jobCreate.bind(jobController));
 

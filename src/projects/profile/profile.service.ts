@@ -12,7 +12,7 @@ export default class ProfileService {
   constructor(
     private readonly profileRepository: ProfileRepository,
     private readonly refdataRepository: RefdataRepository
-  ) {}
+  ) { }
 
   async getProfileByUserId(userId: string) {
     return await this.profileRepository.getProfileByUserId(userId);
@@ -33,14 +33,14 @@ export default class ProfileService {
     return await this.profileRepository.updateProfileExperiences(payload);
   }
   async postAiGeneratedProfile(prompt: string) {
-    const skills = await this.refdataRepository.getSkills();
-    const response = await fetch('http://localhost:8081/ai/profile/generate', {
+    const response = await fetch('http://localhost:8081/ai/profile/generate-langchain', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ prompt, skills }),
+      body: JSON.stringify({ prompt }),
     });
+    console.log("response -->", response)
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => null);

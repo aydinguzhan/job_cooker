@@ -4,6 +4,7 @@ import { JobService } from "./job.service";
 import { jwtttoUserId } from "../../utils/jwt";
 import { IJob } from "./job.entitiy";
 import { z } from "zod";
+import { searchJobsQuerySchema } from "./job.schema";
 
 const scrapedJobsSchema = z.array(
     z.object({
@@ -18,8 +19,17 @@ export class JobController {
     constructor(private readonly jobService: JobService) { };
 
     async searchJob(req: Request, res: Response) {
-        const { page, size } = req.query
-        const results = await this.jobService.searchJob(page as string, size as string)
+        const parsedQuery = searchJobsQuerySchema.safeParse(req.query);
+        if (!parsedQuery.success) {
+            return errorResponse(res, "Invalid job search parameters", 400);
+        }
+
+        const { page, size, keyword } = parsedQuery.data;
+        const results = await this.jobService.searchJob(
+            String(page),
+            String(size),
+            keyword,
+        );
         return successResponse(res, results)
     }
 

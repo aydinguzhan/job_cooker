@@ -8,4 +8,8 @@ export default class RefdataService {
   async getSearchSkills(query: string) {
     return await this.refdataRepository.getSearchSkills(query);
   }
+  async getSearchSkillName(query: string) {
+    const formatSkillName = query.toLocaleLowerCase()
+    return await this.refdataRepository.getSearchSkillName(formatSkillName);
+  }
 }
