@@ -22,7 +22,7 @@ app.use(morgan('dev'));
 app.use(
   cors({
     // origin: ['http://localhost:5173', "0.0.0.0", "http://192.168.1.9"],
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173',"http://localhost:5174"],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

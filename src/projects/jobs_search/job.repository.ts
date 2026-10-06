@@ -11,7 +11,7 @@ export class JobRepository {
         if (!rowCount) return false;
         return rows
     }
-    async searchJob(page: string, size: string) {
+    async searchJob(page: string, size: string, keyword = "") {
         const pageNum = Math.max(1, parseInt(page, 10) || 1);
         const limitNum = Math.max(1, parseInt(size, 10) || 10);
         const offset = (pageNum - 1) * limitNum;
@@ -44,26 +44,31 @@ export class JobRepository {
         FROM jobs j
         LEFT JOIN companies c ON j.company_id = c.id
         LEFT JOIN users u ON j.advertiser_id = u.id
+        WHERE (
+            $3::text IS NULL
+            OR j.title ILIKE '%' || $3 || '%'
+            OR COALESCE(j.description, '') ILIKE '%' || $3 || '%'
+            OR c.name ILIKE '%' || $3 || '%'
+        )
         ORDER BY j.created_at DESC
         LIMIT $1 OFFSET $2;
     `
 
-        const { rows } = await this.db.query(jobQuery, [size, offset])
+        const normalizedKeyword = keyword.trim() || null;
+        const { rows } = await this.db.query(jobQuery, [limitNum, offset, normalizedKeyword])
         if (rows.length === 0) {
             return {
-                data: [],
-                pagination: {
-                    total: 0,
-                    page: pageNum,
-                    size: limitNum,
-                    totalPages: 0,
-                },
+                rows: [],
+                total: 0,
+                page: pageNum,
+                size: limitNum,
             };
         }
         const total = parseInt(rows[0].total_count, 10).toString();
 
-        return { rows, total, page, size }
+        return { rows, total, page: pageNum, size: limitNum }
     }
+
     async jobDetail(jobId: string) {
         const jobDetailQuery = `
         SELECT 

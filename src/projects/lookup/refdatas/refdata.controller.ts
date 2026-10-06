@@ -12,4 +12,9 @@ export default class RefdataController {
     const refDatas = await this.refdataService.getSearchSkills(query.skill as string);
     return successResponse(res, refDatas, 'Succesfuly', 200);
   }
+  async getSearchSkillName(req: Request, res: Response) {
+    const { skill } = req.query;
+    const refDatas = await this.refdataService.getSearchSkillName(skill as string);
+    return successResponse(res, refDatas, 'Succesfuly', 200);
+  }
 }

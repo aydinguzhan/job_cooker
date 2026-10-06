@@ -4,8 +4,8 @@ import { JobRepository } from "./job.repository";
 export class JobService {
     constructor(private readonly jobRepository: JobRepository) { }
 
-    async searchJob(page: string, size: string) {
-        return await this.jobRepository.searchJob(page, size)
+    async searchJob(page: string, size: string, keyword = "") {
+        return await this.jobRepository.searchJob(page, size, keyword)
     }
     async jobDetail(jobId: string) {
         return await this.jobRepository.jobDetail(jobId)

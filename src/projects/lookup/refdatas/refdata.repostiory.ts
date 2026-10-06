@@ -13,4 +13,10 @@ export default class RefdataRepository implements IRefdataEntity {
     const { rows } = await this.db.query<IRefdata>(searchQuery, [`%${query}%`]);
     return rows;
   }
+  async getSearchSkillName(query: string) {
+    const searchQuery = `SELECT id, name, short_key from skills WHERE short_key = $1`;
+    const { rows } = await this.db.query<IRefdata>(searchQuery, [query]);
+    console.log(rows[0])
+    return rows;
+  }
 }
